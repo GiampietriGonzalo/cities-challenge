@@ -12,5 +12,5 @@
  * - Throws: An error if something goes wrong
  */
 protocol FetchCityDetailUseCaseProtocol {
-    func execute(cityId: Int) async throws -> City
+    func execute(cityId: Int) async throws(CustomError) -> City
 }

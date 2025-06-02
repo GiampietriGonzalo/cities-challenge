@@ -5,4 +5,7 @@
 //  Created by Gonza Giampietri on 01/06/2025.
 //
 
-final class CityListViewModelProtocol {}
+protocol CityListViewModelProtocol {
+    var viewData: CityListViewData { get }
+    func load()
+}

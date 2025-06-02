@@ -13,5 +13,5 @@ import Foundation
  * - Throws: An error if something goes wrong
  */
 protocol FetchCityLocationsUseCaseProtocol {
-    func execute() async throws -> [CityLocation]
+    func execute() async throws(CustomError) -> [CityLocation]
 }

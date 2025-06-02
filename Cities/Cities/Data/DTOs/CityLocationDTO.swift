@@ -8,10 +8,10 @@
 import Foundation
 
 struct CityLocationDTO: Decodable {
-    let id: Int
+    let _id: Int
     let name: String
     let country: String
-    let coordinate: Coordinate
+    let coord: Coordinate
 
     struct Coordinate: Decodable {
         let lat: Double
@@ -19,9 +19,9 @@ struct CityLocationDTO: Decodable {
     }
     
     func toDomainModel() -> CityLocation {
-        return CityLocation(id: id,
+        return CityLocation(id: _id,
                             name: name,
                             country: country,
-                            coordinate: .init(latitude: coordinate.lat, longitude: coordinate.lon))
+                            coordinate: .init(latitude: coord.lat, longitude: coord.lon))
     }
 }

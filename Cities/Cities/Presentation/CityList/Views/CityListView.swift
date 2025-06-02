@@ -8,17 +8,41 @@
 import SwiftUI
 
 struct CityListView: View {
+    
     enum State {
         case loading
         case loaded([CityLocation])
         case onError(CustomError)
     }
     
+    let viewModel: CityListViewModelProtocol
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        switch viewModel.viewData.state {
+        case .loading:
+            Text("Loading...")
+                .task {
+                    viewModel.load()
+                }
+        case .loaded(let cities):
+            buildCityList(cities: cities)
+        case .onError(let error):
+            Text("Error: \(error)")
+        }
+    }
+    
+    @ViewBuilder
+    func buildCityList(cities: [CityLocation]) -> some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(cities) { city in
+                    Text(city.name)
+                }
+            }
+        }
     }
 }
 
 #Preview {
-    CityListView()
+    CityListView(viewModel: AppContainer().buildCityListViewModel())
 }

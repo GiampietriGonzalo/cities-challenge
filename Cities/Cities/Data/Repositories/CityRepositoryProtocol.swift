@@ -15,7 +15,7 @@ protocol CityRepositoryProtocol {
      * - Returns: A CityLocationDTO with the information
      * - Throws: An error if something goes wrong
      */
-    func fetchCitiesLocation() async throws -> [CityLocationDTO]
+    func fetchCitiesLocation() async throws(CustomError) -> [CityLocationDTO]
     
     /**
      *  Fetchs the city information
@@ -23,5 +23,5 @@ protocol CityRepositoryProtocol {
      * - Returns: A CityDTO with the information
      * - Throws: An error if something goes wrong
      */
-    func fetchCityDetail(id: Int) async throws -> CityDTO
+    func fetchCityDetail(id: Int) async throws(CustomError) -> CityDTO
 }
