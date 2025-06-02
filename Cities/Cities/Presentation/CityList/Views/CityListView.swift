@@ -34,12 +34,15 @@ struct CityListView: View {
     @ViewBuilder
     func buildCityList(cities: [CityLocation]) -> some View {
         ScrollView {
-            LazyVStack {
+            LazyVStack(spacing: 0) {
                 ForEach(cities) { city in
-                    Text(city.name)
+                    CityCellView(city: city)
+                    Divider()
                 }
             }
         }
+        .scrollIndicators(.hidden)
+        .navigationTitle("title")
     }
 }
 
