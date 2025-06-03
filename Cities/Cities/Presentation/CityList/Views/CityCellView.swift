@@ -16,7 +16,7 @@ struct CityCellView: View {
             VStack {
                 HStack {
                     Text(city.country + ", " + city.name)
-                        .font(.title)
+                        .font(.title2)
                         Spacer()
                 }
                 HStack {
