@@ -7,15 +7,10 @@
 
 import SwiftUI
 
-struct CityListView: View {
-    
-    enum State {
-        case loading
-        case loaded([CityLocation])
-        case onError(CustomError)
-    }
+struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View {
     
     let viewModel: CityListViewModelProtocol
+    let coordinator: Coordinator
     
     var body: some View {
         switch viewModel.viewData.state {
@@ -41,11 +36,10 @@ struct CityListView: View {
                 }
             }
         }
-        .scrollIndicators(.hidden)
-        .navigationTitle("title")
     }
 }
 
 #Preview {
-    CityListView(viewModel: AppContainer().buildCityListViewModel())
+    CityListView(viewModel: AppContainer.shared.buildCityListViewModel(),
+                 coordinator: AppContainer.shared.coordinator)
 }

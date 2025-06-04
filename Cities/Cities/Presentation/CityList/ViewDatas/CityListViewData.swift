@@ -6,5 +6,5 @@
 //
 
 struct CityListViewData {
-    var state: CityListView.State
+    var state: CityListViewState
 }

@@ -5,8 +5,13 @@
 //  Created by Gonza Giampietri on 01/06/2025.
 //
 
-struct AppContainer {
+final class AppContainer {
     
+    static let shared = AppContainer()
+    let coordinator = CityListViewCoordinatorViewModel()
+
+    private init() {}
+
     func buildCityListViewModel() -> CityListViewModelProtocol {
         let networkClient = NetworkRestClient()
         let repository = CityRepository(networkClient: networkClient)
@@ -15,5 +20,4 @@ struct AppContainer {
         
         return viewModel
     }
-    
 }
