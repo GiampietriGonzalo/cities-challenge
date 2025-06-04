@@ -15,7 +15,16 @@ struct MapView: View {
     var body: some View {
         VStack {
             Map(position: $viewModel.viewData.position) {
-                
+                ForEach(viewModel.viewData.cities) { city in
+                    Annotation(city.name, coordinate: .init(latitude: city.coordinate.latitude, longitude: city.coordinate.longitude) ,anchor: .bottom) {
+                        Image(systemName: "mappin.circle")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .foregroundStyle(.white)
+                            .frame(width: 32, height: 32)
+                            .background(.red.gradient, in: .circle)
+                    }
+                }
             }
             .mapControls {
                 MapCompass()
