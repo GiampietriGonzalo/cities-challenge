@@ -10,6 +10,6 @@ extension CityLocation {
         id: 1,
         name: "Mock City",
         country: "AR",
-        coordinate: .init(latitude: 0, longitude: 0)
+        coordinate: .init(latitude: -34.600621, longitude: -58.387721)
     )
 }
