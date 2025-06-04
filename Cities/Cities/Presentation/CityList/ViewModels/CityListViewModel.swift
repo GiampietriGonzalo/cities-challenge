@@ -21,7 +21,7 @@ final class CityListViewModel: CityListViewModelProtocol {
 
         do {
             let result = try await fetchCityListUseCase.execute()
-            let cityLocationViewDatas = result.map { mapToViewData(cityLocation: $0) }
+            let cityLocationViewDatas = result.map { mapToViewData(cityLocation: $0) }.sorted { $0.title < $1.title }
             self.viewData.state = .loaded(cityLocationViewDatas)
         } catch let error {
             self.viewData.state = .onError(error)

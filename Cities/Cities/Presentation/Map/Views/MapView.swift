@@ -15,8 +15,8 @@ struct MapView: View {
     var body: some View {
         VStack {
             Map(position: $viewModel.viewData.position) {
-                ForEach(viewModel.viewData.cities) { city in
-                    Annotation(city.name, coordinate: .init(latitude: city.coordinate.latitude, longitude: city.coordinate.longitude) ,anchor: .bottom) {
+                if let region = viewModel.viewData.position.region {
+                    Annotation("", coordinate: region.center ,anchor: .bottom) {
                         Image(systemName: "mappin.circle")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -55,11 +55,10 @@ struct MapView: View {
                         }
                     }
                 }
-                
             }
-            .padding(.top, 10)
+            .padding(.top, 16)
             .scrollIndicators(.hidden)
-            .frame(height: 48)
+            .frame(height: 32)
             .background(.blue)
 
         }

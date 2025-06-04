@@ -19,7 +19,7 @@ final class MapViewModel: MapViewModelProtocol {
         self.cities = cities
         
         if let firstCity = cities.first {
-            viewData = .init(position: mapLocationToCameraPosition(location: firstCity), cities: cities)
+            viewData = .init(position: mapLocationToCameraPosition(location: firstCity), currentCityName: firstCity.name, cities: cities)
         }
     }
     
