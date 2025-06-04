@@ -16,15 +16,14 @@ final class CityListViewModel: CityListViewModelProtocol {
         self.fetchCityListUseCase = fetchCityListUseCase
     }
     
-    func load() {
+    func load() async {
         viewData.state = .loading
-        Task {
-            do {
-                let result = try await fetchCityListUseCase.execute()
-                self.viewData.state = .loaded(result)
-            } catch let error as CustomError {
-                self.viewData.state = .onError(error)
-            }
+
+        do {
+            let result = try await fetchCityListUseCase.execute()
+            self.viewData.state = .loaded(result)
+        } catch let error {
+            self.viewData.state = .onError(error)
         }
     }
 }

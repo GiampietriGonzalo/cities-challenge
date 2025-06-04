@@ -22,7 +22,7 @@ struct CityListView: View {
         case .loading:
             Text("Loading...")
                 .task {
-                    viewModel.load()
+                    await viewModel.load()
                 }
         case .loaded(let cities):
             buildCityList(cities: cities)

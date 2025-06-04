@@ -7,5 +7,5 @@
 
 protocol CityListViewModelProtocol {
     var viewData: CityListViewData { get }
-    func load()
+    func load() async
 }
