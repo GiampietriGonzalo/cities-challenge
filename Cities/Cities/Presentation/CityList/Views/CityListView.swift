@@ -11,18 +11,24 @@ struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View
     
     let viewModel: CityListViewModelProtocol
     let coordinator: Coordinator
+    @State private var deviceOrientation = UIDeviceOrientation.unknown
     
     var body: some View {
-        switch viewModel.viewData.state {
-        case .loading:
-            Text("Loading...")
-                .task {
-                    await viewModel.load()
-                }
-        case .loaded(let cities):
-            buildCityList(cities: cities)
-        case .onError(let error):
-            Text("Error: \(error)")
+        Group {
+            switch viewModel.viewData.state {
+            case .loading:
+                Text("Loading...")
+                    .task {
+                        await viewModel.load()
+                    }
+            case .loaded(let cities):
+                buildCityList(cities: cities)
+            case .onError(let error):
+                Text("Error: \(error)")
+            }
+        }
+        .onRotate { newOrientation in
+            deviceOrientation = newOrientation
         }
     }
     
