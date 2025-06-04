@@ -12,5 +12,6 @@ struct MapViewData {
     var position: MapCameraPosition
     let cities: [CityLocation]
     
-    static let empty = MapViewData(position: .region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), latitudinalMeters: 50000, longitudinalMeters: 50000)), cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock])
+    static let empty = MapViewData(position: .region(.init(center: .init(), span: .init())),
+                                   cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock])
 }

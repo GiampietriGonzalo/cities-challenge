@@ -6,6 +6,8 @@
 //
 
 import Observation
+import SwiftUI
+import MapKit
 
 @Observable
 final class MapViewModel: MapViewModelProtocol {
@@ -17,8 +19,13 @@ final class MapViewModel: MapViewModelProtocol {
         self.cities = cities
         
         if let firstCity = cities.first {
-//            viewData = .init(initalPosition: firstCity, cities: cities)
+            viewData = .init(position: mapLocationToCameraPosition(location: firstCity), cities: cities)
         }
+    }
+    
+    private func mapLocationToCameraPosition(location: CityLocation) -> MapCameraPosition {
+        MapCameraPosition.region(.init(center: .init(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude),
+                                       latitudinalMeters: 50000, longitudinalMeters: 50000))
     }
 }
     
