@@ -20,4 +20,8 @@ final class AppContainer {
         
         return viewModel
     }
+    
+    func buildMapViewModel(using cities: [CityLocation]) -> MapViewModelProtocol {
+        MapViewModel(cities: cities)
+    }
 }

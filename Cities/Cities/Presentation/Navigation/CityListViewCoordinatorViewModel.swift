@@ -39,7 +39,7 @@ final class CityListViewCoordinatorViewModel: CityListViewCoordinatorViewModelPr
         case .list:
             CityListView(viewModel: AppContainer.shared.buildCityListViewModel(),
                          coordinator: AppContainer.shared.coordinator)
-        case let .map(coordinates: coordinates):
+        case let .map(cities: cities):
             EmptyView()
         case let .detail(city: city):
             EmptyView()

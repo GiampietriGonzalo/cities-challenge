@@ -9,19 +9,18 @@ import SwiftUI
 
 struct CityCellView: View {
     
-    let city: CityLocation
+    let city: CityLocationViewData
     
     var body: some View {
         HStack {
             VStack {
                 HStack {
-                    Text(city.country + ", " + city.name)
+                    Text(city.title)
                         .font(.title2)
                         Spacer()
                 }
                 HStack {
-                    Text("latitude:  \(city.coordinate.latitude.description)")
-                    Text("longitude:  \(city.coordinate.longitude.description)")
+                    Text(city.subtitle)
                     Spacer()
                 }
                 .font(.caption2)
@@ -30,7 +29,7 @@ struct CityCellView: View {
             
             Button {
             } label: {
-                Text("See Details")
+                Text(city.detailButtonText)
                     .font(.headline)
             }
             .buttonStyle(.bordered)

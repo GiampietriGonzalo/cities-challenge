@@ -12,7 +12,7 @@ enum CityListPushNavigationType: PushNavigationType {
    
     case list
     case detail(city: String)
-    case map(coordinates: CityLocation.Coordinate)
+    case map(cities: [CityLocation])
 }
 
 extension CityListPushNavigationType: Hashable {

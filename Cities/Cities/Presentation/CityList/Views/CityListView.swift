@@ -27,7 +27,7 @@ struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View
     }
     
     @ViewBuilder
-    func buildCityList(cities: [CityLocation]) -> some View {
+    func buildCityList(cities: [CityLocationViewData]) -> some View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(cities) { city in

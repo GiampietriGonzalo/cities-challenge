@@ -21,9 +21,20 @@ final class CityListViewModel: CityListViewModelProtocol {
 
         do {
             let result = try await fetchCityListUseCase.execute()
-            self.viewData.state = .loaded(result)
+            let cityLocationViewDatas = result.map { mapToViewData(cityLocation: $0) }
+            self.viewData.state = .loaded(cityLocationViewDatas)
         } catch let error {
             self.viewData.state = .onError(error)
         }
+    }
+    
+    private func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
+        let title = cityLocation.name + ", " + cityLocation.country
+        let subtitle = "latitude: " + cityLocation.coordinate.latitude.description + ", longitude: " + cityLocation.coordinate.longitude.description
+        let buttonText = "Show Details"
+        
+        return CityLocationViewData(title: title,
+                                    subtitle: subtitle,
+                                    detailButtonText: buttonText)
     }
 }

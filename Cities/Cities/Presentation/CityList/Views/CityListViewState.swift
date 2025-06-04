@@ -7,6 +7,6 @@
 
 enum CityListViewState {
     case loading
-    case loaded([CityLocation])
+    case loaded([CityLocationViewData])
     case onError(CustomError)
 }
