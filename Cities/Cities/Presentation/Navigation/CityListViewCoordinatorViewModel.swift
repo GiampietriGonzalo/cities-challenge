@@ -37,8 +37,7 @@ final class CityListViewCoordinatorViewModel: CityListViewCoordinatorViewModelPr
     @ViewBuilder func build(for item: NavigationType) -> some View {
         switch item {
         case .list:
-            CityListView(viewModel: AppContainer.shared.buildCityListViewModel(),
-                         coordinator: AppContainer.shared.coordinator)
+            CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
         case let .map(cities: cities):
             EmptyView()
         case let .detail(city: city):

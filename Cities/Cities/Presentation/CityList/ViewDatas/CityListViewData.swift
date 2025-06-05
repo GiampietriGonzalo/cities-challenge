@@ -7,4 +7,5 @@
 
 struct CityListViewData {
     var state: CityListViewState
+    var mapViewData: MapViewData?
 }

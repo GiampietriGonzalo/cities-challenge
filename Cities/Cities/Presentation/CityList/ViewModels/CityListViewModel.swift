@@ -8,11 +8,13 @@
 import Observation
 
 @Observable
-final class CityListViewModel: CityListViewModelProtocol {
+final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProtocol>: CityListViewModelProtocol {
+    private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
     var viewData: CityListViewData = .init(state: .loading)
     
-    init(fetchCityListUseCase: FetchCityLocationsUseCaseProtocol) {
+    init(coordinator: Coordinator, fetchCityListUseCase: FetchCityLocationsUseCaseProtocol) {
+        self.coordinator = coordinator
         self.fetchCityListUseCase = fetchCityListUseCase
     }
     

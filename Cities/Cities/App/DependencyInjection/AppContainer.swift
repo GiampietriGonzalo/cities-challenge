@@ -16,7 +16,7 @@ final class AppContainer {
         let networkClient = NetworkRestClient()
         let repository = CityRepository(networkClient: networkClient)
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
-        let viewModel = CityListViewModel(fetchCityListUseCase: fetchCityListUseCase)
+        let viewModel = CityListViewModel(coordinator: coordinator, fetchCityListUseCase: fetchCityListUseCase)
         
         return viewModel
     }

@@ -10,13 +10,13 @@ import MapKit
 
 struct MapView: View {
     
-    @State var viewModel: MapViewModelProtocol
+    @State var viewData: MapViewData
     
     var body: some View {
         VStack {
-            Map(position: $viewModel.viewData.position) {
-                if let region = viewModel.viewData.position.region {
-                    Annotation("", coordinate: region.center ,anchor: .bottom) {
+            Map(position: $viewData.position) {
+                if let region = viewData.position.region {
+                    Annotation(viewData.currentCityName, coordinate: region.center ,anchor: .bottom) {
                         Image(systemName: "mappin.circle")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -35,7 +35,7 @@ struct MapView: View {
             
             ScrollView(.horizontal) {
                 HStack(spacing: 8) {
-                    ForEach(viewModel.viewData.cities) { city in
+                    ForEach(viewData.cities) { city in
                         Button {
                             
                         } label: {
@@ -68,5 +68,5 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView(viewModel: AppContainer.shared.buildMapViewModel(using: [.mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock]))
+    MapView(viewData: .init(position: .region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init())), currentCityName: "Mock City", cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock]))
 }

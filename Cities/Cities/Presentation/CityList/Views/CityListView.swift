@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View {
+struct CityListView: View {
     
     let viewModel: CityListViewModelProtocol
-    let coordinator: Coordinator
+    var mapViewModel: MapViewModelProtocol?
     @State private var deviceOrientation = UIDeviceOrientation.unknown
     
     var body: some View {
@@ -33,6 +33,14 @@ struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View
     }
     
     @ViewBuilder
+    func builCityListWithMap(cities: [CityLocationViewData]) -> some View {
+        HStack {
+            buildCityList(cities: cities)
+//            MapView(viewModel: <#T##any MapViewModelProtocol#>)
+        }
+    }
+    
+    @ViewBuilder
     func buildCityList(cities: [CityLocationViewData]) -> some View {
         ScrollView {
             LazyVStack(spacing: 0) {
@@ -46,6 +54,5 @@ struct CityListView<Coordinator: CityListViewCoordinatorViewModelProtocol>: View
 }
 
 #Preview {
-    CityListView(viewModel: AppContainer.shared.buildCityListViewModel(),
-                 coordinator: AppContainer.shared.coordinator)
+    CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
 }
