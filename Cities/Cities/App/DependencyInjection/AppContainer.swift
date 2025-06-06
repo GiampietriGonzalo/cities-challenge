@@ -16,12 +16,15 @@ final class AppContainer {
         let networkClient = NetworkRestClient()
         let repository = CityRepository(networkClient: networkClient)
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
-        let viewModel = CityListViewModel(coordinator: coordinator, fetchCityListUseCase: fetchCityListUseCase)
+        let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
+        let viewModel = CityListViewModel(coordinator: coordinator,
+                                          fetchCityListUseCase: fetchCityListUseCase,
+                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase)
         
         return viewModel
     }
     
-    func buildMapViewModel(using cities: [CityLocation]) -> MapViewModelProtocol {
-        MapViewModel(cities: cities)
+    func buildMapViewModel(viewData: MapViewData) -> MapViewModelProtocol {
+        MapViewModel(viewData: viewData)
     }
 }

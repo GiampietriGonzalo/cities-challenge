@@ -9,9 +9,10 @@ import SwiftUI
 
 struct CityListView: View {
     
-    let viewModel: CityListViewModelProtocol
     var mapViewModel: MapViewModelProtocol?
+    @State var viewModel: CityListViewModelProtocol
     @State private var deviceOrientation = UIDeviceOrientation.unknown
+    @State private var mapViewData: MapViewData = .empty
     
     var body: some View {
         Group {
@@ -21,11 +22,15 @@ struct CityListView: View {
                     .task {
                         await viewModel.load()
                     }
-            case .loaded(let cities):
-                buildCityList(cities: cities)
+            case let .loaded(cities, mapViewData):
+                buildCityScreen(cities: cities, mapViewData: mapViewData)
             case .onError(let error):
                 Text("Error: \(error)")
             }
+        }
+        .onChange(of: viewModel.viewData) {
+            guard case .loaded(_, let mapViewData) = viewModel.viewData.state, let mapViewData else { return }
+            self.mapViewData = mapViewData
         }
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
@@ -33,23 +38,31 @@ struct CityListView: View {
     }
     
     @ViewBuilder
-    func builCityListWithMap(cities: [CityLocationViewData]) -> some View {
-        HStack {
+    func buildCityScreen(cities: [CityLocationViewData], mapViewData: MapViewData?) -> some View {
+        if deviceOrientation == .portrait {
             buildCityList(cities: cities)
-//            MapView(viewModel: <#T##any MapViewModelProtocol#>)
+        } else if let mapViewData = mapViewData {
+            buildCityListWithMap(cities: cities, mapViewData: mapViewData)
         }
     }
     
-    @ViewBuilder
+    func buildCityListWithMap(cities: [CityLocationViewData], mapViewData: MapViewData) -> some View {
+        HStack {
+            buildCityList(cities: cities)
+                .frame(width: 200)
+            MapView(viewData: $mapViewData)
+        }
+    }
+    
     func buildCityList(cities: [CityLocationViewData]) -> some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(cities) { city in
-                    CityCellView(city: city)
-                    Divider()
-                }
+        List {
+            ForEach(cities) { city in
+                CityCellView(city: city)
+                    .listRowInsets(EdgeInsets())
+                    
             }
         }
+        .listStyle(.plain)
     }
 }
 

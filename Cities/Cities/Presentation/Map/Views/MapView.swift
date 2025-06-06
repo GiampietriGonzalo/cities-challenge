@@ -10,7 +10,7 @@ import MapKit
 
 struct MapView: View {
     
-    @State var viewData: MapViewData
+    @Binding var viewData: MapViewData
     
     var body: some View {
         VStack {
@@ -34,7 +34,7 @@ struct MapView: View {
             .mapStyle(.standard(elevation: .realistic))
             
             ScrollView(.horizontal) {
-                HStack(spacing: 8) {
+                HStack(spacing: 0) {
                     ForEach(viewData.cities) { city in
                         Button {
                             
@@ -46,7 +46,7 @@ struct MapView: View {
                         .foregroundStyle(.white)
                         .background(Color.black)
                         .clipShape(.capsule)
-                        .padding(.horizontal, 4)
+                        .padding(.horizontal, 8)
                         .scrollTransition { content, phase in
                             content
                                 .opacity(phase.isIdentity ? 1 : 0)
@@ -63,10 +63,9 @@ struct MapView: View {
 
         }
         .background(.blue)
-        
     }
 }
 
 #Preview {
-    MapView(viewData: .init(position: .region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init())), currentCityName: "Mock City", cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock]))
+    MapView(viewData: .constant(.init(position: .region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init())), currentCityName: "Mock City", cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock])))
 }

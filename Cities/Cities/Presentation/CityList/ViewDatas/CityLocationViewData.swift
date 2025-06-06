@@ -6,7 +6,7 @@
 //
 import Foundation
 
-struct CityLocationViewData: Identifiable {
+struct CityLocationViewData: Identifiable, Equatable {
     let id: UUID = UUID()
     let title: String
     let subtitle: String

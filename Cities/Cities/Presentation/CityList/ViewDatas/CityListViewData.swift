@@ -5,7 +5,6 @@
 //  Created by Gonza Giampietri on 02/06/2025.
 //
 
-struct CityListViewData {
+struct CityListViewData: Equatable {
     var state: CityListViewState
-    var mapViewData: MapViewData?
 }

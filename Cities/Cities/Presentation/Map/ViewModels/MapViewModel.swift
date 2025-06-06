@@ -12,15 +12,15 @@ import MapKit
 @Observable
 final class MapViewModel: MapViewModelProtocol {
     
-    private let cities: [CityLocation]
-    var viewData: MapViewData = .empty
+    var viewData: MapViewData
     
-    init(cities: [CityLocation]) {
-        self.cities = cities
-        
-        if let firstCity = cities.first {
-            viewData = .init(position: mapLocationToCameraPosition(location: firstCity), currentCityName: firstCity.name, cities: cities)
-        }
+    init(viewData: MapViewData) {
+        self.viewData = viewData
+//        self.cities = cities
+//        
+//        if let firstCity = cities.first {
+//            viewData = .init(position: mapLocationToCameraPosition(location: firstCity), currentCityName: firstCity.name, cities: cities)
+//        }
     }
     
     private func mapLocationToCameraPosition(location: CityLocation) -> MapCameraPosition {
