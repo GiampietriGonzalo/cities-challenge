@@ -16,20 +16,20 @@ struct CityListView: View {
     
     var body: some View {
         Group {
-            switch viewModel.viewData.state {
+            switch viewModel.state {
             case .loading:
                 Text("Loading...")
                     .task {
                         await viewModel.load()
                     }
-            case let .loaded(cities, mapViewData):
-                buildCityScreen(cities: cities, mapViewData: mapViewData)
+            case let .loaded(viewData):
+                buildCityScreen(cities: viewData.cityLocations, mapViewData: viewData.mapViewData)
             case .onError(let error):
                 Text("Error: \(error)")
             }
         }
-        .onChange(of: viewModel.viewData) {
-            guard case .loaded(_, let mapViewData) = viewModel.viewData.state, let mapViewData else { return }
+        .onChange(of: viewModel.state) {
+            guard case .loaded(let viewData) = viewModel.state, let mapViewData = viewData.mapViewData else { return }
             self.mapViewData = mapViewData
         }
         .onRotate { newOrientation in

@@ -12,7 +12,7 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
     private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
     private let mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol
-    var viewData: CityListViewData = .init(state: .loading)
+    var state: CityListViewState = .loading
     
     init(coordinator: Coordinator, fetchCityListUseCase: FetchCityLocationsUseCaseProtocol, mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol) {
         self.coordinator = coordinator
@@ -21,14 +21,14 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
     }
     
     func load() async {
-        viewData.state = .loading
+        self.state = .loading
 
         do {
             let result = try await fetchCityListUseCase.execute()
             let cityLocationViewDatas = result.map { mapToViewData(cityLocation: $0) }.sorted { $0.title < $1.title }
-            self.viewData.state = .loaded(cityLocationViewDatas, nil)
+            self.state = .loaded(.init(cityLocations: cityLocationViewDatas, mapViewData: nil))
         } catch let error {
-            self.viewData.state = .onError(error)
+            self.state = .onError(error)
         }
     }
    

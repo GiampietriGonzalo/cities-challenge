@@ -6,6 +6,6 @@
 //
 
 protocol CityListViewModelProtocol {
-    var viewData: CityListViewData { get }
+    var state: CityListViewState { get }
     func load() async
 }

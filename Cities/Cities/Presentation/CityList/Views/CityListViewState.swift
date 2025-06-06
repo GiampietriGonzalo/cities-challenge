@@ -7,6 +7,6 @@
 
 enum CityListViewState: Equatable {
     case loading
-    case loaded([CityLocationViewData], MapViewData?)
+    case loaded(CityListViewData)
     case onError(CustomError)
 }
