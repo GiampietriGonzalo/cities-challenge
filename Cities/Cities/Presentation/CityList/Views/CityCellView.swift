@@ -32,7 +32,7 @@ struct CityCellView: View {
             } label: {
                 Text(city.detailButtonText)
                     .font(.headline)
-                    .frame(height: 28)
+                    .frame(minHeight: 28)
             }
             .buttonStyle(.bordered)
             .foregroundStyle(.white)
@@ -43,9 +43,8 @@ struct CityCellView: View {
         }
         .padding(.vertical, 16)
         .background {
-            Color.mint
-//            LinearGradient(gradient: Gradient(colors: [.mint, .mint]),
-//                           startPoint: .leading, endPoint: .trailing)
+            LinearGradient(gradient: Gradient(colors: [.mint.opacity(0.7), .mint.opacity(0.85)]),
+                           startPoint: .leading, endPoint: .trailing)
         }
     }
 }

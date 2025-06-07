@@ -38,8 +38,8 @@ final class CityListViewCoordinatorViewModel: CityListViewCoordinatorViewModelPr
         switch item {
         case .list:
             CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
-        case let .map(cities: cities):
-            EmptyView()
+        case let .map(viewData):
+            MapView(viewData: .constant(viewData))
         case let .detail(city: city):
             EmptyView()
         }

@@ -53,8 +53,7 @@ struct CityListView: View {
         HStack(spacing: 0) {
             buildCityList(cities: cities)
                 .frame(width: 250)
-            MapView(viewData: $mapViewData,
-                    displayCitySelector: !deviceOrientation.isLandscape)
+            MapView(viewData: $mapViewData)
         }
     }
     

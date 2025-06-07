@@ -40,9 +40,15 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
         let buttonText = "Details"
         
         let onCitySelected: (Bool) -> Void = { [weak self] orientatioIsLandscape in
-            guard let self, orientatioIsLandscape else { return }
-            self.state = .loaded(.init(cityLocations: self.cityLocationViewDatas,
-                                       mapViewData: self.buildMapViewData(cityLocation: cityLocation)))
+            guard let self else { return }
+            let mapViewData = self.buildMapViewData(cityLocation: cityLocation)
+            
+            if orientatioIsLandscape {
+                self.state = .loaded(.init(cityLocations: self.cityLocationViewDatas,
+                                           mapViewData: mapViewData))
+            } else if let mapViewData {
+                self.coordinator.push(.map(viewData: mapViewData))
+            }
         }
         
         return CityLocationViewData(title: title,
