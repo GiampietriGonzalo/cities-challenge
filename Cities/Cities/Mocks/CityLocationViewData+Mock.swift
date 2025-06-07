@@ -8,6 +8,7 @@
 extension CityLocationViewData {
     static let mock = CityLocationViewData(
         title: "Mock City",
-        subtitle: "Mock Country",
-        detailButtonText: "Mock Detail Button Text")
+        subtitle: "lat: 12.3456789, lon: 98.7654321",
+        detailButtonText: "Details",
+        onSelect: { _ in })
 }

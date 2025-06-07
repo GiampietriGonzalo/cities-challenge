@@ -16,7 +16,7 @@ struct CityCellView: View {
             VStack {
                 HStack {
                     Text(city.title)
-                        .font(.title2)
+                        .font(.title3)
                         Spacer()
                 }
                 HStack {
@@ -26,22 +26,26 @@ struct CityCellView: View {
                 .font(.caption2)
             }
             .padding(.leading, 16)
+            .foregroundStyle(.black)
             
             Button {
             } label: {
                 Text(city.detailButtonText)
                     .font(.headline)
+                    .frame(height: 28)
             }
             .buttonStyle(.bordered)
-            .foregroundStyle(.orange)
+            .foregroundStyle(.white)
             .background(Color.black)
             .clipShape(.capsule)
             .padding(.trailing, 16)
+            
         }
         .padding(.vertical, 16)
         .background {
-            LinearGradient(gradient: Gradient(colors: [.blue, .orange]),
-                           startPoint: .leading, endPoint: .trailing)
+            Color.mint
+//            LinearGradient(gradient: Gradient(colors: [.mint, .mint]),
+//                           startPoint: .leading, endPoint: .trailing)
         }
     }
 }

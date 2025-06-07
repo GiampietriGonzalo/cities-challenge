@@ -8,10 +8,4 @@
 struct CityListViewData: Equatable {
     let cityLocations: [CityLocationViewData]
     let mapViewData: MapViewData?
-    var actions: [String] = []
-
-    struct Actions {
-        let onSelectCity: (CityLocation) -> Void
-        let onMapNavigation: (CityLocation) -> Void
-    }
 }

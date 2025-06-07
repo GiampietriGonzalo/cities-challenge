@@ -13,6 +13,6 @@ final class FetchCityLocationsUseCase: FetchCityLocationsUseCaseProtocol {
     }
     
     func execute() async throws(CustomError) -> [CityLocation] {
-        try await repository.fetchCitiesLocation().map { $0.toDomainModel() }
+        try await repository.fetchCitiesLocation().map { $0.toDomainModel() }.sorted { $0.name < $1.name }
     }
 }

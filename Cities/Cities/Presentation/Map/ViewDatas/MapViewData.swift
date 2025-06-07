@@ -11,7 +11,7 @@ import MapKit
 struct MapViewData: Equatable {
     var position: MapCameraPosition
     var currentCityName: String
-    let cities: [CityLocation]
+    let cities: [CityLocationViewData]
     
     static let empty = MapViewData(position: .region(.init(center: .init(), span: .init())), currentCityName: CityLocation.mock.name,
                                    cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock, .mock])

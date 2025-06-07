@@ -11,7 +11,7 @@ struct CityListView: View {
     
     var mapViewModel: MapViewModelProtocol?
     @State var viewModel: CityListViewModelProtocol
-    @State private var deviceOrientation = UIDeviceOrientation.unknown
+    @State private var deviceOrientation: UIDeviceOrientation = .unknown
     @State private var mapViewData: MapViewData = .empty
     
     var body: some View {
@@ -29,28 +29,32 @@ struct CityListView: View {
             }
         }
         .onChange(of: viewModel.state) {
-            guard case .loaded(let viewData) = viewModel.state, let mapViewData = viewData.mapViewData else { return }
+            guard deviceOrientation.isLandscape,
+                  case .loaded(let viewData) = viewModel.state, let mapViewData = viewData.mapViewData else { return }
             self.mapViewData = mapViewData
         }
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
+            debugPrint(deviceOrientation.rawValue)
         }
+        .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
     }
     
     @ViewBuilder
     func buildCityScreen(cities: [CityLocationViewData], mapViewData: MapViewData?) -> some View {
-        if deviceOrientation == .portrait {
-            buildCityList(cities: cities)
-        } else if let mapViewData = mapViewData {
+        if deviceOrientation.isLandscape, let mapViewData = mapViewData {
             buildCityListWithMap(cities: cities, mapViewData: mapViewData)
+        } else {
+            buildCityList(cities: cities)
         }
     }
     
     func buildCityListWithMap(cities: [CityLocationViewData], mapViewData: MapViewData) -> some View {
-        HStack {
+        HStack(spacing: 0) {
             buildCityList(cities: cities)
-                .frame(width: 200)
-            MapView(viewData: $mapViewData)
+                .frame(width: 250)
+            MapView(viewData: $mapViewData,
+                    displayCitySelector: !deviceOrientation.isLandscape)
         }
     }
     
@@ -59,10 +63,14 @@ struct CityListView: View {
             ForEach(cities) { city in
                 CityCellView(city: city)
                     .listRowInsets(EdgeInsets())
+                    .onTapGesture {
+                        city.onSelect(deviceOrientation.isLandscape)
+                    }
                     
             }
         }
         .listStyle(.plain)
+        .ignoresSafeArea()
     }
 }
 
