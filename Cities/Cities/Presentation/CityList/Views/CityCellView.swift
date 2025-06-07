@@ -38,6 +38,15 @@ struct CityCellView: View {
             .foregroundStyle(.white)
             .background(Color.black)
             .clipShape(.capsule)
+            .padding(.trailing, 8)
+            
+            Button {
+            } label: {
+                Image(systemName: city.isFavorite ? "star.fill" : "star")
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .tint(.yellow)
+            }
             .padding(.trailing, 16)
             
         }

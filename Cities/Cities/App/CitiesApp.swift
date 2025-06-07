@@ -11,9 +11,7 @@ import SwiftData
 @main
 struct CitiesApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
+        let schema = Schema([FavoriteCity.self])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
@@ -26,7 +24,15 @@ struct CitiesApp: App {
     var body: some Scene {
         WindowGroup {
             CityListCoordinatorView(viewModel: AppContainer.shared.coordinator)
+                .task {
+                    setupModelContext()
+                }
         }
         .modelContainer(sharedModelContainer)
+    }
+    
+    func setupModelContext() {
+        let context = ModelContext(sharedModelContainer)
+        AppContainer.shared.modelContext = context
     }
 }

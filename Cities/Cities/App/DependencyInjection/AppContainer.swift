@@ -5,10 +5,13 @@
 //  Created by Gonza Giampietri on 01/06/2025.
 //
 
+import SwiftData
+
 final class AppContainer {
     
     static let shared = AppContainer()
     let coordinator = CityListViewCoordinatorViewModel()
+    var modelContext: ModelContext?
 
     private init() {}
 
