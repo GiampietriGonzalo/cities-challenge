@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CityListView: View {
     
@@ -59,11 +60,11 @@ struct CityListView: View {
     
     func buildCityList(cities: [CityLocationViewData]) -> some View {
         List {
-            ForEach(cities) { city in
-                CityCellView(city: city)
+            ForEach(cities) { cityViewData in
+                CityCellView(viewData: cityViewData)
                     .listRowInsets(EdgeInsets())
                     .onTapGesture {
-                        city.onSelect(deviceOrientation.isLandscape)
+                        cityViewData.onSelect(deviceOrientation.isLandscape)
                     }
                     
             }

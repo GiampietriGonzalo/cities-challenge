@@ -12,28 +12,42 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
     private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
     private let mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol
+    private let favoriteCityUseCase: FavoriteCityUseCaseProtocol
     private var cityLocationViewDatas: [CityLocationViewData] = []
+    private var cityLocationModels: [CityLocation] = []
     var state: CityListViewState = .loading
     
-    init(coordinator: Coordinator, fetchCityListUseCase: FetchCityLocationsUseCaseProtocol, mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol) {
+    init(coordinator: Coordinator,
+         fetchCityListUseCase: FetchCityLocationsUseCaseProtocol,
+         mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol,
+         favoriteCityUseCase: FavoriteCityUseCaseProtocol) {
         self.coordinator = coordinator
         self.fetchCityListUseCase = fetchCityListUseCase
         self.mapLocationToCameraPositionUseCase = mapLocationToCameraPositionUseCase
+        self.favoriteCityUseCase = favoriteCityUseCase
     }
     
+    @MainActor
     func load() async {
         self.state = .loading
 
         do {
             let result = try await fetchCityListUseCase.execute()
-            self.cityLocationViewDatas = result.map { mapToViewData(cityLocation: $0) }
-            self.state = .loaded(.init(cityLocations: cityLocationViewDatas,
-                                       mapViewData: buildMapViewData(cityLocation: result.first)))
+            self.cityLocationModels = result
+            self.loadState()
         } catch let error {
             self.state = .onError(error)
         }
     }
    
+    @MainActor
+    private func loadState() {
+        self.cityLocationViewDatas = cityLocationModels.map { mapToViewData(cityLocation: $0) }
+        self.state = .loaded(.init(cityLocations: cityLocationViewDatas,
+                                   mapViewData: buildMapViewData(cityLocation: cityLocationModels.first)))
+    }
+    
+    @MainActor
     private func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
         let title = cityLocation.name + ", " + cityLocation.country
         let subtitle = "lat: " + cityLocation.coordinate.latitude.description + ", lon: " + cityLocation.coordinate.longitude.description
@@ -51,10 +65,17 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
             }
         }
         
-        return CityLocationViewData(title: title,
+        let onFavoriteSelected: () -> Void = { [weak self]  in
+            guard let self else { return }
+            try? self.favoriteCityUseCase.insert(cityId: cityLocation.id)
+        }
+        
+        return CityLocationViewData(id: cityLocation.id,
+                                    title: title,
                                     subtitle: subtitle,
                                     detailButtonText: buttonText,
-                                    onSelect: onCitySelected)
+                                    onSelect: onCitySelected,
+                                    onFavoriteSelected: onFavoriteSelected)
     }
     
     private func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {

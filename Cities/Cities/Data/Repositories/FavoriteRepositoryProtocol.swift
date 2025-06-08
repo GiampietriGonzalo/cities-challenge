@@ -6,6 +6,6 @@
 //
 
 protocol FavoriteRepositoryProtocol {
-    func toggleFavorite(cityId: Int) throws(CustomError)
+    func insertFavorite(cityId: Int) throws(CustomError)
     func isFavorite(cityId: Int) throws(CustomError) -> Bool
 }

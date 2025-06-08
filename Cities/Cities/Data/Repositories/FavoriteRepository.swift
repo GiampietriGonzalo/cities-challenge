@@ -8,37 +8,30 @@
 import SwiftData
 import Foundation
 
-final class FavoriteRepository {
-    private let modelContext: ModelContext
+final class FavoriteRepository: FavoriteRepositoryProtocol {
+    private let modelContext: ModelContext?
     
-    init(modelContext: ModelContext) {
+    init(modelContext: ModelContext?) {
         self.modelContext = modelContext
     }
     
-    func toggleFavorite(cityId: Int) throws(CustomError) {
+    func insertFavorite(cityId: Int) throws(CustomError) {
+        guard let modelContext else { throw CustomError.serviceError("Context not available") }
         let predicate = #Predicate<FavoriteCity> { $0.id == cityId }
         let request = FetchDescriptor<FavoriteCity>(predicate: predicate)
-        
+       
         do {
-            let existing = try modelContext.fetch(request).first
-            
-            if let existing = existing {
-                modelContext.delete(existing)
-            } else {
-                modelContext.insert(FavoriteCity(id: cityId))
-            }
+            let exists = try !modelContext.fetch(request).isEmpty
+            if !exists { modelContext.insert(FavoriteCity(id: cityId, isFavorite: true)) }
         } catch {
-            throw CustomError.serviceError("Error fetching favorites")
+            throw CustomError.serviceError("Error: favorite city not found")
         }
         
-        do {
-            try modelContext.save()
-        } catch {
-            throw CustomError.serviceError("Error saving favorites")
-        }
+        try save()
     }
     
     func isFavorite(cityId: Int) throws(CustomError) -> Bool {
+        guard let modelContext else { throw CustomError.serviceError("Context not available") }
         let predicate = #Predicate<FavoriteCity> { $0.id == cityId }
         let request = FetchDescriptor<FavoriteCity>(predicate: predicate)
         
@@ -47,5 +40,19 @@ final class FavoriteRepository {
         } catch {
             throw CustomError.serviceError("Error fetching favorites")
         }
+    }
+    
+    private func save() throws(CustomError) {
+        guard let modelContext else { throw CustomError.serviceError("Context not available") }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            throw CustomError.serviceError("Error saving favorites")
+        }
+    }
+    
+    deinit {
+        try? save()
     }
 }

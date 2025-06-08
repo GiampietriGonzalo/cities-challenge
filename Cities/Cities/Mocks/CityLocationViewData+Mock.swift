@@ -7,8 +7,10 @@
 
 extension CityLocationViewData {
     static let mock = CityLocationViewData(
+        id: 0,
         title: "Mock City",
         subtitle: "lat: 12.3456789, lon: 98.7654321",
         detailButtonText: "Details",
-        onSelect: { _ in })
+        onSelect: { _ in },
+        onFavoriteSelected: {})
 }

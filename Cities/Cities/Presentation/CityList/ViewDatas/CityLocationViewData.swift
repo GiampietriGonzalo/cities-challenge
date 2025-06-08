@@ -7,12 +7,12 @@
 import Foundation
 
 struct CityLocationViewData: Identifiable, Equatable {
-    let id: UUID = UUID()
+    let id: Int
     let title: String
     let subtitle: String
     let detailButtonText: String
-    let isFavorite: Bool = false
     let onSelect: (Bool) -> Void
+    let onFavoriteSelected: () -> Void
     
     static func == (lhs: CityLocationViewData, rhs: CityLocationViewData) -> Bool {
         lhs.id == rhs.id

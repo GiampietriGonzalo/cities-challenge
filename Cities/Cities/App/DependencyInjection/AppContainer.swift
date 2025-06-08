@@ -11,18 +11,35 @@ final class AppContainer {
     
     static let shared = AppContainer()
     let coordinator = CityListViewCoordinatorViewModel()
-    var modelContext: ModelContext?
+    
+    var modelContainer: ModelContainer = {
+        let schema = Schema([FavoriteCity.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
-    private init() {}
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
+    let modelContext: ModelContext
+
+    private init() {
+        modelContext = ModelContext(modelContainer)
+    }
 
     func buildCityListViewModel() -> CityListViewModelProtocol {
         let networkClient = NetworkRestClient()
         let repository = CityRepository(networkClient: networkClient)
+        let favoriteRepository = FavoriteRepository(modelContext: modelContext)
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
         let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
+        let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteRepository)
         let viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityListUseCase,
-                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase)
+                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
+                                          favoriteCityUseCase: favoriteCityUseCase)
         
         return viewModel
     }

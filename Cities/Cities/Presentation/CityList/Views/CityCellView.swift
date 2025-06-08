@@ -6,21 +6,23 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CityCellView: View {
     
-    let city: CityLocationViewData
+    let viewData: CityLocationViewData
+    @Query var favorites: [FavoriteCity]
     
     var body: some View {
         HStack {
             VStack {
                 HStack {
-                    Text(city.title)
+                    Text(viewData.title)
                         .font(.title3)
-                        Spacer()
+                    Spacer()
                 }
                 HStack {
-                    Text(city.subtitle)
+                    Text(viewData.subtitle)
                     Spacer()
                 }
                 .font(.caption2)
@@ -30,7 +32,7 @@ struct CityCellView: View {
             
             Button {
             } label: {
-                Text(city.detailButtonText)
+                Text(viewData.detailButtonText)
                     .font(.headline)
                     .frame(minHeight: 28)
             }
@@ -40,15 +42,18 @@ struct CityCellView: View {
             .clipShape(.capsule)
             .padding(.trailing, 8)
             
-            Button {
-            } label: {
-                Image(systemName: city.isFavorite ? "star.fill" : "star")
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .tint(.yellow)
-            }
-            .padding(.trailing, 16)
-            
+            Image(systemName: (favorites.first(where: { $0.id == viewData.id })?.isFavorite ?? false) ? "star.fill" : "star")
+                .resizable()
+                .frame(width: 24, height: 24)
+                .tint(.yellow)
+                .padding(.trailing, 16)
+                .highPriorityGesture(TapGesture().onEnded {
+                    if let index = favorites.firstIndex(where: { $0.id == viewData.id }) {
+                        favorites[index].isFavorite.toggle()
+                    } else {
+                        viewData.onFavoriteSelected()
+                    }
+                })
         }
         .padding(.vertical, 16)
         .background {
@@ -59,5 +64,5 @@ struct CityCellView: View {
 }
 
 #Preview {
-    CityCellView(city: .mock)
+    CityCellView(viewData: .mock)
 }

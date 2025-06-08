@@ -9,13 +9,12 @@ import Foundation
 import SwiftData
 
 @Model
-final class FavoriteCity {
-    @Attribute(.unique) private var id: Int
+final class FavoriteCity: Equatable {
+    @Attribute(.unique)  var id: Int
     var isFavorite: Bool = false
     
-    init(id: Int) {
+    init(id: Int, isFavorite: Bool = false) {
         self.id = id
+        self.isFavorite = isFavorite
     }
-    
-    func getId() -> Int { id }
 }
