@@ -15,9 +15,16 @@ struct CityListTests {
         let viewModel: CityListViewModelProtocol
         
         init() {
-            let repository = CityRepository(networkClient: networkClient)
-            let useCase = FetchCityLocationsUseCase(repository: repository)
-            viewModel = CityListViewModel(fetchCityListUseCase: useCase)
+            let cityRepository = CityRepository(networkClient: networkClient)
+            let favoriteCityRepository = FavoriteRepositoryMock()
+            let fetchCityLocationsUseCase = FetchCityLocationsUseCase(repository: cityRepository)
+            let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
+            let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteCityRepository)
+            let coordinator = CityListViewCoordinatorViewModelMock()
+            viewModel = CityListViewModel(coordinator: coordinator,
+                                          fetchCityListUseCase: fetchCityLocationsUseCase,
+                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
+                                          favoriteCityUseCase: favoriteCityUseCase)
         }
         
         @Test(.tags(.presentation), arguments: [[CityLocationDTO.mock, CityLocationDTO.mock],
@@ -26,8 +33,8 @@ struct CityListTests {
         func load(dtos: [CityLocationDTO]) async {
             networkClient.dto = dtos
             await viewModel.load()
-            if case .loaded(let cities) = viewModel.viewData.state {
-                #expect(cities.count == dtos.count)
+            if case .loaded(let viewData) = viewModel.state {
+                #expect(viewData.cityLocations.count == dtos.count)
             } else {
                 #expect(Bool(false))
             }
@@ -44,7 +51,7 @@ struct CityListTests {
             networkClient.customError = customError
             await viewModel.load()
             
-            if case .onError(let error) = viewModel.viewData.state {
+            if case .onError(let error) = viewModel.state {
                 #expect(error == customError)
             } else {
                 #expect(Bool(false))
