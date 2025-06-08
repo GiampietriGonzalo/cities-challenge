@@ -9,22 +9,32 @@ import Observation
 
 @Observable
 final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProtocol>: CityListViewModelProtocol {
+    
+    //MARK: Dependencies
     private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
     private let mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol
     private let favoriteCityUseCase: FavoriteCityUseCaseProtocol
+    private let filterCitiesUseCase: FilterCitiesUseCaseProtocol
+    
+    //MARK: Useful properties
     private var cityLocationViewDatas: [CityLocationViewData] = []
     private var cityLocationModels: [CityLocation] = []
+    private var mapViewData: MapViewData?
+    
+    //MARK: Observed State
     var state: CityListViewState = .loading
     
     init(coordinator: Coordinator,
          fetchCityListUseCase: FetchCityLocationsUseCaseProtocol,
          mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol,
-         favoriteCityUseCase: FavoriteCityUseCaseProtocol) {
+         favoriteCityUseCase: FavoriteCityUseCaseProtocol,
+         filterCitiesUseCase: FilterCitiesUseCaseProtocol) {
         self.coordinator = coordinator
         self.fetchCityListUseCase = fetchCityListUseCase
         self.mapLocationToCameraPositionUseCase = mapLocationToCameraPositionUseCase
         self.favoriteCityUseCase = favoriteCityUseCase
+        self.filterCitiesUseCase = filterCitiesUseCase
     }
     
     @MainActor
@@ -34,20 +44,23 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
         do {
             let result = try await fetchCityListUseCase.execute()
             self.cityLocationModels = result
-            self.loadState()
+            self.loadState(with: result)
         } catch let error {
             self.state = .onError(error)
         }
     }
    
-    @MainActor
-    private func loadState() {
-        self.cityLocationViewDatas = cityLocationModels.map { mapToViewData(cityLocation: $0) }
-        self.state = .loaded(.init(cityLocations: cityLocationViewDatas,
-                                   mapViewData: buildMapViewData(cityLocation: cityLocationModels.first)))
+    private func loadState(with cities: [CityLocation]) {
+        self.configureProperties(with: cities)
+        self.state = .loaded(.init(cityLocations: cityLocationViewDatas, mapViewData: mapViewData, onFilter: onFilter))
     }
     
-    @MainActor
+    private func configureProperties(with cities: [CityLocation]) {
+        self.cityLocationViewDatas = cities.map { mapToViewData(cityLocation: $0) }
+        self.mapViewData = buildMapViewData(cityLocation: cityLocationModels.first)
+    }
+    
+    //TODO: Refact to a Use Case or Mapper
     private func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
         let title = cityLocation.name + ", " + cityLocation.country
         let subtitle = "lat: " + cityLocation.coordinate.latitude.description + ", lon: " + cityLocation.coordinate.longitude.description
@@ -59,7 +72,8 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
             
             if orientatioIsLandscape {
                 self.state = .loaded(.init(cityLocations: self.cityLocationViewDatas,
-                                           mapViewData: mapViewData))
+                                           mapViewData: mapViewData,
+                                           onFilter: self.onFilter))
             } else if let mapViewData {
                 self.coordinator.push(.map(viewData: mapViewData))
             }
@@ -78,9 +92,15 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
                                     onFavoriteSelected: onFavoriteSelected)
     }
     
+    //TODO: Refact to a Use Case or Mapper
     private func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {
         guard let cityLocation else { return nil }
         let cameraPositon = mapLocationToCameraPositionUseCase.execute(cityLocation)
         return MapViewData(position: cameraPositon, currentCityName: cityLocation.name, cities: cityLocationViewDatas)
+    }
+    
+    @Sendable private func onFilter(text: String) {
+        let filterCities = filterCitiesUseCase.execute(cities: cityLocationModels, filterBy: text)
+        self.loadState(with: filterCities)
     }
 }

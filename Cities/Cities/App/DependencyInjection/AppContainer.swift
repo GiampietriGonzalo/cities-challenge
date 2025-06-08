@@ -36,10 +36,12 @@ final class AppContainer {
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
         let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
         let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteRepository)
+        let filterUseCase = FilterCitiesUseCase()
         let viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityListUseCase,
                                           mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
-                                          favoriteCityUseCase: favoriteCityUseCase)
+                                          favoriteCityUseCase: favoriteCityUseCase,
+                                          filterCitiesUseCase: filterUseCase)
         
         return viewModel
     }

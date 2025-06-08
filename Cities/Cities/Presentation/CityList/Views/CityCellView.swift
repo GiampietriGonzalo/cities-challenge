@@ -28,7 +28,6 @@ struct CityCellView: View {
                 .font(.caption2)
             }
             .padding(.leading, 16)
-            .foregroundStyle(.black)
             
             Button {
             } label: {
@@ -42,10 +41,11 @@ struct CityCellView: View {
             .clipShape(.capsule)
             .padding(.trailing, 8)
             
-            Image(systemName: (favorites.first(where: { $0.id == viewData.id })?.isFavorite ?? false) ? "star.fill" : "star")
+            Image(systemName: (favorites.first(where: { $0.id == viewData.id })?.isFavorite ?? false) ? "heart.fill" : "heart")
                 .resizable()
+                .renderingMode(.template)
                 .frame(width: 24, height: 24)
-                .tint(.yellow)
+                .foregroundStyle(.red)
                 .padding(.trailing, 16)
                 .highPriorityGesture(TapGesture().onEnded {
                     if let index = favorites.firstIndex(where: { $0.id == viewData.id }) {
@@ -56,10 +56,6 @@ struct CityCellView: View {
                 })
         }
         .padding(.vertical, 16)
-        .background {
-            LinearGradient(gradient: Gradient(colors: [.mint.opacity(0.7), .mint.opacity(0.85)]),
-                           startPoint: .leading, endPoint: .trailing)
-        }
     }
 }
 

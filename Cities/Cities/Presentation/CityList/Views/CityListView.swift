@@ -14,6 +14,8 @@ struct CityListView: View {
     @State var viewModel: CityListViewModelProtocol
     @State private var deviceOrientation: UIDeviceOrientation = .unknown
     @State private var mapViewData: MapViewData = .empty
+    @State private var searchText: String = ""
+    private var isSearching: Bool { !searchText.isEmpty }
     
     var body: some View {
         Group {
@@ -36,9 +38,19 @@ struct CityListView: View {
         }
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
-            debugPrint(deviceOrientation.rawValue)
+        }
+        .overlay {
+            if isSearching,
+               case let .loaded(viewData) = viewModel.state,
+               viewData.cityLocations.isEmpty {
+                ContentUnavailableView("Product not available",
+                                       systemImage: "magnifyingglass",
+                                       description: Text("No results for **\(searchText)**")
+                )
+            }
         }
         .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
+        .navigationTitle("Cities")
     }
     
     @ViewBuilder
@@ -70,10 +82,18 @@ struct CityListView: View {
             }
         }
         .listStyle(.plain)
-        .ignoresSafeArea()
+        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search by city name")
+        .textInputAutocapitalization(.never)
+        .onChange(of: searchText) {
+            guard case let .loaded(viewData) = viewModel.state else { return }
+            debugPrint(searchText)
+            viewData.onFilter(searchText)
+        }
     }
 }
 
 #Preview {
-    CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
+    NavigationStack {
+        CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
+    }
 }

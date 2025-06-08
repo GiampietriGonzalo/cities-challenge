@@ -8,4 +8,9 @@
 struct CityListViewData: Equatable {
     let cityLocations: [CityLocationViewData]
     let mapViewData: MapViewData?
+    let onFilter: @Sendable (String) -> Void
+    
+    static func == (lhs: CityListViewData, rhs: CityListViewData) -> Bool {
+        lhs.cityLocations == rhs.cityLocations && lhs.mapViewData == rhs.mapViewData
+    }
 }
