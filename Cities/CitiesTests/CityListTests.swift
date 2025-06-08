@@ -24,7 +24,8 @@ struct CityListTests {
             viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityLocationsUseCase,
                                           mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
-                                          favoriteCityUseCase: favoriteCityUseCase)
+                                          favoriteCityUseCase: favoriteCityUseCase,
+                                          filterCitiesUseCase: FilterCitiesUseCase())
         }
         
         @Test(.tags(.presentation), arguments: [[CityLocationDTO.mock, CityLocationDTO.mock],
