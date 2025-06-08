@@ -86,7 +86,6 @@ struct CityListView: View {
         .textInputAutocapitalization(.never)
         .onChange(of: searchText) {
             guard case let .loaded(viewData) = viewModel.state else { return }
-            debugPrint(searchText)
             viewData.onFilter(searchText)
         }
     }
