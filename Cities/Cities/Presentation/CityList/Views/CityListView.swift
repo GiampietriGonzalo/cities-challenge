@@ -22,47 +22,50 @@ struct CityListView: View {
             switch viewModel.state {
             case .loading:
                 Text("Loading...")
-                    .task {
-                        await viewModel.load()
-                    }
+                    .task { await viewModel.load() }
             case let .loaded(viewData):
-                buildCityScreen(cities: viewData.cityLocations, mapViewData: viewData.mapViewData)
+                buildCityScreen(cities: viewData.cityLocations)
             case .onError(let error):
                 Text("Error: \(error)")
             }
         }
         .onChange(of: viewModel.state) {
-            guard deviceOrientation.isLandscape,
-                  case .loaded(let viewData) = viewModel.state, let mapViewData = viewData.mapViewData else { return }
+            guard case .loaded(let viewData) = viewModel.state,
+                  let mapViewData = viewData.mapViewData else { return }
             self.mapViewData = mapViewData
         }
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
         }
-        .overlay {
-            if isSearching,
-               case let .loaded(viewData) = viewModel.state,
-               viewData.cityLocations.isEmpty {
-                ContentUnavailableView("Product not available",
-                                       systemImage: "magnifyingglass",
-                                       description: Text("No results for **\(searchText)**")
-                )
-            }
-        }
-        .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
         .navigationTitle("Cities")
+        .ignoresSafeArea(.keyboard)
     }
     
     @ViewBuilder
-    func buildCityScreen(cities: [CityLocationViewData], mapViewData: MapViewData?) -> some View {
-        if deviceOrientation.isLandscape, let mapViewData = mapViewData {
-            buildCityListWithMap(cities: cities, mapViewData: mapViewData)
-        } else {
-            buildCityList(cities: cities)
+    func buildCityScreen(cities: [CityLocationViewData]) -> some View {
+        Group {
+            if isSearching, cities.isEmpty {
+                buildNoResultsView()
+            } else if deviceOrientation.isLandscape {
+                buildCityListWithMap(cities: cities)
+            } else {
+                buildCityList(cities: cities)
+            }
+        }
+        .modifier(SearchViewModifier(searchText: $searchText, prompt: "Search by name"))
+        .onChange(of: searchText) {
+            guard case let .loaded(viewData) = viewModel.state else { return }
+            viewData.onFilter(searchText)
         }
     }
     
-    func buildCityListWithMap(cities: [CityLocationViewData], mapViewData: MapViewData) -> some View {
+    func buildNoResultsView() -> some View {
+        ContentUnavailableView("City not found",
+                               systemImage: "magnifyingglass",
+                               description: Text("No results for **\(searchText)**"))
+    }
+        
+    func buildCityListWithMap(cities: [CityLocationViewData]) -> some View {
         HStack(spacing: 0) {
             buildCityList(cities: cities)
                 .frame(width: 250)
@@ -71,23 +74,18 @@ struct CityListView: View {
     }
     
     func buildCityList(cities: [CityLocationViewData]) -> some View {
-        List {
-            ForEach(cities) { cityViewData in
-                CityCellView(viewData: cityViewData)
-                    .listRowInsets(EdgeInsets())
-                    .onTapGesture {
-                        cityViewData.onSelect(deviceOrientation.isLandscape)
-                    }
-                    
+        ScrollView {
+            LazyVStack {
+                ForEach(cities) { cityViewData in
+                    CityCellView(viewData: cityViewData)
+                        .onTapGesture {
+                            cityViewData.onSelect(deviceOrientation.isLandscape)
+                        }
+                }
             }
         }
-        .listStyle(.plain)
-        .searchable(text: $searchText, placement: .navigationBarDrawer, prompt: "Search by city name")
-        .textInputAutocapitalization(.never)
-        .onChange(of: searchText) {
-            guard case let .loaded(viewData) = viewModel.state else { return }
-            viewData.onFilter(searchText)
-        }
+        .ignoresSafeArea(.container, edges: .horizontal)
+        .scrollIndicators(.hidden)
     }
 }
 

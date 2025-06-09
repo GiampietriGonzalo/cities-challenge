@@ -9,7 +9,14 @@ final class FilterCitiesUseCase: FilterCitiesUseCaseProtocol {
     private let trie = CityTrie()
     private var isBuilt = false
     
-    func execute(cities: [CityLocation], filterBy text: String) -> [CityLocation] {
+    func setup(with cities: [CityLocationViewData]) {
+        guard !isBuilt else { return }
+        
+        for city in cities { trie.insert(city: city) }
+         isBuilt = true
+    }
+    
+    func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData] {
         guard !text.isEmpty else { return cities }
         let prefix = text.lowercased()
         
@@ -27,14 +34,14 @@ final class FilterCitiesUseCase: FilterCitiesUseCaseProtocol {
 struct CityTrie {
     private class Node {
         var children: [Character: Node] = [:]
-        var cities: [CityLocation] = []
+        var cities: [CityLocationViewData] = []
     }
     
     private let root = Node()
     
-    func insert(city: CityLocation) {
+    func insert(city: CityLocationViewData) {
         var current = root
-        for char in city.name.lowercased() {
+        for char in city.title.lowercased() {
             if current.children[char] == nil {
                 current.children[char] = Node()
             }
@@ -46,7 +53,7 @@ struct CityTrie {
         }
     }
     
-    func search(prefix: String) -> [CityLocation] {
+    func search(prefix: String) -> [CityLocationViewData] {
         var current = root
         for char in prefix {
             guard let node = current.children[char] else {

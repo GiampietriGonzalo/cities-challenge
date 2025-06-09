@@ -44,15 +44,18 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
         do {
             let result = try await fetchCityListUseCase.execute()
             self.cityLocationModels = result
-            self.loadState(with: result)
+            self.configureProperties(with: result)
+            self.filterCitiesUseCase.setup(with: self.cityLocationViewDatas)
+            self.loadState(with: self.cityLocationViewDatas)
         } catch let error {
             self.state = .onError(error)
         }
     }
    
-    private func loadState(with cities: [CityLocation]) {
-        self.configureProperties(with: cities)
-        self.state = .loaded(.init(cityLocations: cityLocationViewDatas, mapViewData: mapViewData, onFilter: onFilter))
+    private func loadState(with cityViewDatas: [CityLocationViewData]) {
+        self.state = .loaded(.init(cityLocations: cityViewDatas,
+                                   mapViewData: mapViewData,
+                                   onFilter: onFilter))
     }
     
     private func configureProperties(with cities: [CityLocation]) {
@@ -100,7 +103,7 @@ final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProto
     }
     
     @Sendable private func onFilter(text: String) {
-        let filterCities = filterCitiesUseCase.execute(cities: cityLocationModels, filterBy: text)
+        let filterCities = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
         self.loadState(with: filterCities)
     }
 }

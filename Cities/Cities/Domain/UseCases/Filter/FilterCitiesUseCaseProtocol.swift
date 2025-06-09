@@ -6,5 +6,6 @@
 //
 
 protocol FilterCitiesUseCaseProtocol {
-    func execute(cities: [CityLocation], filterBy text: String) -> [CityLocation]
+    func setup(with cities: [CityLocationViewData])
+    func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData]
 }

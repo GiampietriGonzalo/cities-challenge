@@ -18,3 +18,14 @@ struct DeviceRotationViewModifier: ViewModifier {
             }
     }
 }
+
+struct SearchViewModifier: ViewModifier {
+    @Binding var searchText: String
+    let prompt: String
+    
+    func body(content: Content) -> some View {
+        content
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: prompt)
+            .textInputAutocapitalization(.never)
+    }
+}
