@@ -10,7 +10,7 @@ import SwiftData
 final class AppContainer {
     
     static let shared = AppContainer()
-    let coordinator = CityListViewCoordinatorViewModel()
+    let coordinator = AppCoordinatorViewModel()
     
     var modelContainer: ModelContainer = {
         let schema = Schema([FavoriteCity.self])

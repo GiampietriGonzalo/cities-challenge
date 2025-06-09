@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-final class CityListViewCoordinatorViewModelMock: CityListViewCoordinatorViewModelProtocol {
+final class CityListViewCoordinatorViewModelMock: AppCoordinatorViewModelProtocol {
     
     var navigationPath: NavigationPath = .init()
     var navigationPathBinding: Binding<NavigationPath> = .constant(.init())

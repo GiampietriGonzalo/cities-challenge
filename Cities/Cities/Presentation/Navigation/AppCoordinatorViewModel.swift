@@ -1,5 +1,5 @@
 //
-//  CityListViewCoordinatorViewModel.swift
+//  AppCoordinatorViewModel.swift
 //  Cities
 //
 //  Created by Gonza Giampietri on 04/06/2025.
@@ -9,7 +9,7 @@ import SwiftUI
 import Observation
 
 @Observable
-final class CityListViewCoordinatorViewModel: CityListViewCoordinatorViewModelProtocol{
+final class AppCoordinatorViewModel: AppCoordinatorViewModelProtocol{
     var navigationPath = NavigationPath()
     
     //MARK: Binding

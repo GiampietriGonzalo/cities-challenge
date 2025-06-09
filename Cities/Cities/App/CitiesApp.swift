@@ -12,7 +12,7 @@ import SwiftData
 struct CitiesApp: App {
     var body: some Scene {
         WindowGroup {
-            CityListCoordinatorView(viewModel: AppContainer.shared.coordinator)
+            AppCoordinatorView(viewModel: AppContainer.shared.coordinator)
         }
         .modelContainer(AppContainer.shared.modelContainer)
     }

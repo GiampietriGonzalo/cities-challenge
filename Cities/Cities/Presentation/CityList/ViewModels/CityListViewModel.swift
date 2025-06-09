@@ -8,7 +8,7 @@
 import Observation
 
 @Observable
-final class CityListViewModel<Coordinator: CityListViewCoordinatorViewModelProtocol>: CityListViewModelProtocol {
+final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: CityListViewModelProtocol {
     
     //MARK: Dependencies
     private let coordinator: Coordinator
