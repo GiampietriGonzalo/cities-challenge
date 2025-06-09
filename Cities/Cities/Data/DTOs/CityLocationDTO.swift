@@ -11,12 +11,7 @@ struct CityLocationDTO: Decodable {
     let _id: Int
     let name: String
     let country: String
-    let coord: Coordinate
-
-    struct Coordinate: Decodable {
-        let lat: Double
-        let lon: Double
-    }
+    let coord: CoordinateDTO
     
     func toDomainModel() -> CityLocation {
         return CityLocation(id: _id,

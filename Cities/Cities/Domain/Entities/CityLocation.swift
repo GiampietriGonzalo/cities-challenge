@@ -11,11 +11,6 @@ struct CityLocation: Identifiable, Equatable {
     let country: String
     let coordinate: Coordinate
 
-    struct Coordinate: Decodable {
-        let latitude: Double
-        let longitude: Double
-    }
-    
     static func == (lhs: CityLocation, rhs: CityLocation) -> Bool {
         lhs.id == rhs.id
     }

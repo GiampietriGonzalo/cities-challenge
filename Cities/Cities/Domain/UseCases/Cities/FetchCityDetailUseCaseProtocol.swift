@@ -8,9 +8,9 @@
 /**
  *  Fetchs the detail information of a city
  * - Parameters cityId: An Int id value related to a city
- * - Returns: A City entity
+ * - Returns: A City name
  * - Throws: An error if something goes wrong
  */
 protocol FetchCityDetailUseCaseProtocol {
-    func execute(cityId: Int) async throws(CustomError) -> City
+    func execute(name: String, countryCode: String) async throws(CustomError) -> CityDetail
 }

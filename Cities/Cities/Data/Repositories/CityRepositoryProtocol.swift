@@ -19,9 +19,9 @@ protocol CityRepositoryProtocol {
     
     /**
      *  Fetchs the city information
-     * - Parameter url: The endpoint to fetch the information
-     * - Returns: A CityDTO with the information
+     * - Parameter nameParam: The name useful to fetch the information
+     * - Returns: A CityDetailDTO with the information
      * - Throws: An error if something goes wrong
      */
-    func fetchCityDetail(id: Int) async throws(CustomError) -> CityDTO
+    func fetchCityDetail(nameParam: String) async throws(CustomError) -> CityDetailDTO
 }

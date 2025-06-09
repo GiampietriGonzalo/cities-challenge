@@ -11,6 +11,7 @@ final class AppContainer {
     
     static let shared = AppContainer()
     let coordinator = AppCoordinatorViewModel()
+    private let networkClient = NetworkRestClient()
     
     var modelContainer: ModelContainer = {
         let schema = Schema([FavoriteCity.self])
@@ -30,7 +31,6 @@ final class AppContainer {
     }
 
     func buildCityListViewModel() -> CityListViewModelProtocol {
-        let networkClient = NetworkRestClient()
         let repository = CityRepository(networkClient: networkClient)
         let favoriteRepository = FavoriteRepository(modelContext: modelContext)
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
@@ -48,5 +48,13 @@ final class AppContainer {
     
     func buildMapViewModel(viewData: MapViewData) -> MapViewModelProtocol {
         MapViewModel(viewData: viewData)
+    }
+    
+    func buildCityDetailViewModel(cityName: String, countryCode: String) -> CityDetailViewModel {
+        let repository = CityRepository(networkClient: networkClient)
+        let useCase = FetchCityDetailUseCase(repository: repository)
+        let viewModel = CityDetailViewModel(cityName: cityName, countryCode: countryCode, useCase: useCase)
+        
+        return viewModel
     }
 }
