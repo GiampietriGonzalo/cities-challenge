@@ -7,23 +7,14 @@
 
 final class FilterCitiesUseCase: FilterCitiesUseCaseProtocol {
     private let trie = CityTrie()
-    private var isBuilt = false
     
     func setup(with cities: [CityLocationViewData]) {
-        guard !isBuilt else { return }
-        
         for city in cities { trie.insert(city: city) }
-         isBuilt = true
     }
     
     func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData] {
         guard !text.isEmpty else { return cities }
-        let prefix = text.lowercased()
-        
-        if !isBuilt {
-            for city in cities { trie.insert(city: city) }
-            isBuilt = true
-        }
+        let prefix = text.folding(options: .diacriticInsensitive, locale: .current).lowercased()
         
         return trie.search(prefix: prefix)
     }
