@@ -19,6 +19,7 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     
     //MARK: Useful properties
     private var cityLocationViewDatas: [CityLocationViewData] = []
+    private var filteredCityLocationViewDatas: [CityLocationViewData] = []
     private var cityLocationModels: [CityLocation] = []
     private var mapViewData: MapViewData?
     
@@ -72,9 +73,10 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
         let onCitySelected: (Bool) -> Void = { [weak self] orientatioIsLandscape in
             guard let self else { return }
             let mapViewData = self.buildMapViewData(cityLocation: cityLocation)
+            let locationsViewDatas = filteredCityLocationViewDatas.isEmpty ? self.cityLocationViewDatas : self.filteredCityLocationViewDatas
             
             if orientatioIsLandscape {
-                self.state = .loaded(.init(cityLocations: self.cityLocationViewDatas,
+                self.state = .loaded(.init(cityLocations: locationsViewDatas,
                                            mapViewData: mapViewData,
                                            onFilter: self.onFilter))
             } else if let mapViewData {
@@ -109,7 +111,7 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     }
     
     @Sendable private func onFilter(text: String) {
-        let filterCities = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
-        self.loadState(with: filterCities)
+        self.filteredCityLocationViewDatas = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
+        self.loadState(with: filteredCityLocationViewDatas)
     }
 }

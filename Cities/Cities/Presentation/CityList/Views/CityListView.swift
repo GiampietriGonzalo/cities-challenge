@@ -15,6 +15,7 @@ struct CityListView: View {
     @State private var deviceOrientation: UIDeviceOrientation = .unknown
     @State private var mapViewData: MapViewData = .empty
     @State private var searchText: String = ""
+    @State private var selectedCityId: Int?
     private var isSearching: Bool { !searchText.isEmpty }
     
     var body: some View {
@@ -80,7 +81,9 @@ struct CityListView: View {
                     CityCellView(viewData: cityViewData)
                         .onTapGesture {
                             cityViewData.onSelect(deviceOrientation.isLandscape)
+                            selectedCityId = cityViewData.id
                         }
+                        .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : Color.white)
                 }
             }
         }
