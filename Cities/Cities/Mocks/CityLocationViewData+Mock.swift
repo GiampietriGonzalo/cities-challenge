@@ -12,5 +12,6 @@ extension CityLocationViewData {
         subtitle: "lat: 12.3456789, lon: 98.7654321",
         detailButtonText: "Details",
         onSelect: { _ in },
-        onFavoriteSelected: {})
+        onFavoriteTap: {},
+        onDetailButtonTap: {})
 }

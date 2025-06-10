@@ -12,7 +12,8 @@ struct CityLocationViewData: Identifiable, Equatable {
     let subtitle: String
     let detailButtonText: String
     let onSelect: (Bool) -> Void
-    let onFavoriteSelected: () -> Void
+    let onFavoriteTap: () -> Void
+    let onDetailButtonTap: () -> Void
     
     static func == (lhs: CityLocationViewData, rhs: CityLocationViewData) -> Bool {
         lhs.id == rhs.id

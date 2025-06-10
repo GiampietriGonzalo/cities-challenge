@@ -30,6 +30,7 @@ struct CityCellView: View {
             .padding(.leading, 16)
             
             Button {
+                viewData.onDetailButtonTap()
             } label: {
                 Text(viewData.detailButtonText)
                     .font(.headline)
@@ -51,7 +52,7 @@ struct CityCellView: View {
                     if let index = favorites.firstIndex(where: { $0.id == viewData.id }) {
                         favorites[index].isFavorite.toggle()
                     } else {
-                        viewData.onFavoriteSelected()
+                        viewData.onFavoriteTap()
                     }
                 })
         }

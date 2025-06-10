@@ -82,9 +82,14 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
             }
         }
         
-        let onFavoriteSelected: () -> Void = { [weak self]  in
+        let onFavoriteTap: () -> Void = { [weak self]  in
             guard let self else { return }
             try? self.favoriteCityUseCase.insert(cityId: cityLocation.id)
+        }
+        
+        let onDetailTap: () -> Void = { [weak self] in
+            guard let self else { return }
+            self.coordinator.push(.detail(cityName: cityLocation.name, countryCode: cityLocation.country))
         }
         
         return CityLocationViewData(id: cityLocation.id,
@@ -92,7 +97,8 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
                                     subtitle: subtitle,
                                     detailButtonText: buttonText,
                                     onSelect: onCitySelected,
-                                    onFavoriteSelected: onFavoriteSelected)
+                                    onFavoriteTap: onFavoriteTap,
+                                    onDetailButtonTap: onDetailTap)
     }
     
     //TODO: Refact to a Use Case or Mapper
