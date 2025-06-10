@@ -29,16 +29,25 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
     private func buildContent(with viewData: CityDetailViewData) -> some View {
         ScrollView {
             VStack {
-                AsyncImage(url: viewData.image) { image in
-                    image.image?
-                        .resizable()
+                AsyncImage(url: viewData.image) { phase in
+                    Group {
+                        if let image = phase.image {
+                            image
+                                .resizable()
+                                .clipped()
+                                .cornerRadius(8)
+                                .shadow(radius: 8)
+                        } else if phase.error != nil {
+                            ContentUnavailableView("Image not available",
+                                                   systemImage: "photo.badge.exclamationmark.fill")
+                        } else {
+                            ProgressView()
+                        }
+                    }
+                    .frame(height: 250)
+                    .padding(.top, 16)
+                    .padding(.horizontal, 16)
                 }
-                .frame(height: 250)
-                .shadow(radius: 8)
-                .cornerRadius(8)
-
-                .padding(.top, 16)
-                .padding(.horizontal, 16)
                 
                 VStack {
                     Group {
@@ -50,7 +59,7 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
                         
                         HStack {
                             Text(viewData.description)
-                                .font(.footnote)
+                                .font(.caption)
                             Spacer()
                         }
                         
