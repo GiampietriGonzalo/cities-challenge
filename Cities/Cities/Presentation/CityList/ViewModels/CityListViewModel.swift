@@ -13,6 +13,7 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     //MARK: Dependencies
     private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
+    private let sortCitiesUseCase: SortCitiesUseCaseProtocol
     private let mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol
     private let favoriteCityUseCase: FavoriteCityUseCaseProtocol
     private let filterCitiesUseCase: FilterCitiesUseCaseProtocol
@@ -28,11 +29,13 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     
     init(coordinator: Coordinator,
          fetchCityListUseCase: FetchCityLocationsUseCaseProtocol,
+         sortCitiesUseCase: SortCitiesUseCaseProtocol,
          mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol,
          favoriteCityUseCase: FavoriteCityUseCaseProtocol,
          filterCitiesUseCase: FilterCitiesUseCaseProtocol) {
         self.coordinator = coordinator
         self.fetchCityListUseCase = fetchCityListUseCase
+        self.sortCitiesUseCase = sortCitiesUseCase
         self.mapLocationToCameraPositionUseCase = mapLocationToCameraPositionUseCase
         self.favoriteCityUseCase = favoriteCityUseCase
         self.filterCitiesUseCase = filterCitiesUseCase
@@ -44,10 +47,10 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
 
         do {
             let result = try await fetchCityListUseCase.execute()
-            self.cityLocationModels = result
-            self.configureProperties(with: result)
-            self.filterCitiesUseCase.setup(with: self.cityLocationViewDatas)
-            self.loadState(with: self.cityLocationViewDatas)
+            self.cityLocationModels = sortCitiesUseCase.execute(cities: result)
+            self.configureProperties(with: cityLocationModels)
+            self.filterCitiesUseCase.setup(with: cityLocationViewDatas)
+            self.loadState(with: cityLocationViewDatas)
         } catch let error {
             self.state = .onError(error)
         }

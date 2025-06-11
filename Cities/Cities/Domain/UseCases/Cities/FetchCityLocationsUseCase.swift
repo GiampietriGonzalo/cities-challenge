@@ -13,18 +13,6 @@ final class FetchCityLocationsUseCase: FetchCityLocationsUseCaseProtocol {
     }
     
     func execute() async throws(CustomError) -> [CityLocation] {
-        let cities = try await repository.fetchCitiesLocation().map { $0.toDomainModel() }.sorted { $0.name < $1.name }
-        var nameStartWithLetter: [CityLocation] = []
-        var nameDoesNotStartWithLetter: [CityLocation] = []
-        
-        for city in cities {
-            if city.name.first?.isLetter ?? false {
-                nameStartWithLetter.append(city)
-            } else {
-                nameDoesNotStartWithLetter.append(city)
-            }
-        }
-        
-        return nameStartWithLetter + nameDoesNotStartWithLetter
+        try await repository.fetchCitiesLocation().map { $0.toDomainModel() }
     }
 }
