@@ -8,11 +8,20 @@
 import Foundation
 
 struct EndpointBuilder {
+    
+    /**
+     *  An enumeration that contains all the possible endpoints of the app
+     */
     enum Endpoint {
         case cities
         case detail(name: String)
     }
     
+    /**
+     *  Builds and returns an URL for a given **Endpoint** value
+     *  - Parameter endpoint: a given **Endpoint** value to build the URL
+     *  - Returns: An URL
+     */
     static func build(for endpoint: Endpoint) -> URL? {
         switch endpoint {
         case .cities:
@@ -20,7 +29,7 @@ struct EndpointBuilder {
             return URL(string: url)
         case .detail(let name):
             let formattedName = name.replacingOccurrences(of: " ", with: "_")
-            let url = BaseURL.cityDetail.rawValue.appending(name)
+            let url = BaseURL.cityDetail.rawValue.appending(formattedName)
             return URL(string: url)
         }
     }

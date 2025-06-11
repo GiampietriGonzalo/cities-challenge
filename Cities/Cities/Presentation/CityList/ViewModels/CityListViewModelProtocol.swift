@@ -6,6 +6,14 @@
 //
 
 protocol CityListViewModelProtocol {
+    
+    /**
+     *  A CityListViewState  that represents the current state of the screen
+     */
     var state: CityListViewState { get }
+    
+    /**
+     *  Start loading asynchronously all the information necessary for the CityList screen
+     */
     func load() async
 }

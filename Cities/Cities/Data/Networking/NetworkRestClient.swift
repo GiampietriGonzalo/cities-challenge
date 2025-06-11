@@ -11,7 +11,7 @@ import Foundation
  *  Handle Rest networking calls
  * - Parameter url: The endpoint to perform the service call
  * - Returns: A Decodable instance
- * - Throws: **CustomError.serviceError:** when the service response status is not OK.  **CustomError.decodeError:**  when It is not possible to decode the response. **CustomError.networkError:** When there is another error with the service call
+ * - Throws: A **CustomError** if something went wrong
  */
 final class NetworkRestClient: NetworkClientProtocol {
     private var session = URLSession(configuration: .default)

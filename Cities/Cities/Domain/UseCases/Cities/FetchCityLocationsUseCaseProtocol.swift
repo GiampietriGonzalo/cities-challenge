@@ -9,8 +9,8 @@ import Foundation
 
 /**
  *  Fetchs the city list
- * - Returns: An array of FilmModel with the information fetched
- * - Throws: An error if something goes wrong
+ * - Returns: An array of CityLocation models with the information fetched
+ * - Throws: A **CustomError** if something goes wrong
  */
 protocol FetchCityLocationsUseCaseProtocol {
     func execute() async throws(CustomError) -> [CityLocation]

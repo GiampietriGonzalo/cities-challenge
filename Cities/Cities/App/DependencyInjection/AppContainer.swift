@@ -7,13 +7,14 @@
 
 import SwiftData
 
+/// Singleton AppContainer. Enables Dependency Injection. Inititiaze the view models and all their dependencies.
 final class AppContainer {
     
     static let shared = AppContainer()
     let coordinator = AppCoordinatorViewModel()
     private let networkClient = NetworkRestClient()
     
-    var modelContainer: ModelContainer = {
+    lazy var modelContainer: ModelContainer = {
         let schema = Schema([FavoriteCity.self])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -24,12 +25,16 @@ final class AppContainer {
         }
     }()
     
-    let modelContext: ModelContext
-
-    private init() {
-        modelContext = ModelContext(modelContainer)
+    var modelContext: ModelContext {
+        ModelContext(modelContainer)
     }
 
+    private init() {}
+    
+    /**
+     * Initialize a CityListViewModel with all it's dependencies.
+     * - Returns: a CityListViewModel
+     */
     func buildCityListViewModel() -> CityListViewModelProtocol {
         let repository = CityRepository(networkClient: networkClient)
         let favoriteRepository = FavoriteRepository(modelContext: modelContext)
@@ -48,10 +53,18 @@ final class AppContainer {
         return viewModel
     }
     
+    /**
+     * Initialize a MapViewModel with all it's dependencies.
+     * - Returns: a MapViewModel
+     */
     func buildMapViewModel(viewData: MapViewData) -> MapViewModelProtocol {
         MapViewModel(viewData: viewData)
     }
     
+    /**
+     * Initialize a CityDetailViewModel with all it's dependencies.
+     * - Returns: a CityDetailViewModel
+     */
     func buildCityDetailViewModel(cityName: String, countryCode: String) -> CityDetailViewModel {
         let repository = CityRepository(networkClient: networkClient)
         let useCase = FetchCityDetailUseCase(repository: repository)
