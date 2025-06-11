@@ -21,7 +21,13 @@ final class FilterCitiesUseCase: FilterCitiesUseCaseProtocol {
 }
 
 // MARK: - Trie Structure
-
+/**
+ * Node: Each node in the Trie represents a character in a string (e.g., "a", "l", "b"), and paths through the tree represent words or names (e.g., "alb" → "alabama").
+ *      Each node stores:
+ *          - Its children (a dictionary [Character: Node])
+ *          - An array of matching CityLocationViewData entries at that path
+ *
+ */
 struct CityTrie {
     private class Node {
         var children: [Character: Node] = [:]
@@ -30,6 +36,9 @@ struct CityTrie {
     
     private let root = Node()
     
+    /**
+     * Traverses the characters in the city’s name. At each character, it adds a new node (if it not exists) and appends the city to the cities list at that level
+     */
     func insert(city: CityLocationViewData) {
         var current = root
         for char in city.title.lowercased() {
@@ -44,6 +53,9 @@ struct CityTrie {
         }
     }
     
+    /**
+     * The trie walks down nodes matching the prefix parameter. If the path exists, it returns the cities stored at that node.
+     */
     func search(prefix: String) -> [CityLocationViewData] {
         var current = root
         for char in prefix {
