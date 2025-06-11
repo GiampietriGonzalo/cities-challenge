@@ -15,8 +15,4 @@ final class FavoriteCityUseCase: FavoriteCityUseCaseProtocol {
     func insert(cityId: Int) throws(CustomError) {
         try repository.insertFavorite(cityId: cityId)
     }
-    
-    func isFavorite(cityId: Int) throws(CustomError) -> Bool {
-        try repository.isFavorite(cityId: cityId)
-    }
 }

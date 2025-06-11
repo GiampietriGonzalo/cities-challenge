@@ -7,5 +7,4 @@
 
 protocol FavoriteCityUseCaseProtocol {
     func insert(cityId: Int) throws(CustomError)
-    func isFavorite(cityId: Int) throws(CustomError) -> Bool
 }
