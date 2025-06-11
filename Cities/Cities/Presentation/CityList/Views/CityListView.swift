@@ -16,6 +16,7 @@ struct CityListView: View {
     @State private var mapViewData: MapViewData = .empty
     @State private var searchText: String = ""
     @State private var selectedCityId: Int?
+    @State private var showCancelButton = false
     private var isSearching: Bool { !searchText.isEmpty }
     
     var body: some View {
@@ -78,16 +79,32 @@ struct CityListView: View {
                             .renderingMode(.template)
                             .padding(.vertical, 4)
                             .padding(.leading, 8)
-                        TextField("Search by name", text: $searchText)
-                            .textFieldStyle(.plain)
-                            .padding(.vertical, 4)
-                            .padding(.trailing, 8)
+                        TextField("Search by name", text: $searchText, onEditingChanged: { editing in
+                            withAnimation {
+                                showCancelButton = editing
+                            }
+                        })
+                        .textFieldStyle(.plain)
+                        .padding(.vertical, 4)
+                        .padding(.trailing, 8)
+                        .autocorrectionDisabled()
                     }
                     .frame(height: 32)
                     .background(Color.gray.opacity(0.1))
                     .foregroundStyle(.secondary)
                     .cornerRadius(8)
-                    .padding(.horizontal, 24)
+                    .padding(.leading, 24)
+                    .padding(.trailing, !showCancelButton ? 24 : 4)
+                    
+                    if showCancelButton {
+                        Button {
+                            searchText = ""
+                        } label: {
+                            Text("Cancel")
+                        }
+                        .padding(.trailing, 8)
+                        .transition(.scale)
+                    }
                 }
                 .ignoresSafeArea()
                 .padding(.top, 16)

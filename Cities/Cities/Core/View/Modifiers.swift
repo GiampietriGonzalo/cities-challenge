@@ -27,5 +27,6 @@ struct SearchViewModifier: ViewModifier {
         content
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: prompt)
             .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
     }
 }
