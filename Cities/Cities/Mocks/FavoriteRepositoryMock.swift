@@ -6,9 +6,14 @@
 //
 
 final class FavoriteRepositoryMock: FavoriteRepositoryProtocol {
-    private var favoriteCities: [FavoriteCity] = []
+    var favoriteCities: [FavoriteCity] = []
+    var error: CustomError?
     
     func insertFavorite(cityId: Int) throws(CustomError) {
-        favoriteCities.append(.init(id: cityId))
+        if let error = error {
+            throw error
+        } else {
+            favoriteCities.append(.init(id: cityId))
+        }
     }
 }

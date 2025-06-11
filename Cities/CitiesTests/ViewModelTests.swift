@@ -1,5 +1,5 @@
 //
-//  CityListTests.swift
+//  ViewModelTests.swift
 //  CitiesTests
 //
 //  Created by Gonza Giampietri on 01/06/2025.
@@ -8,9 +8,9 @@
 import Testing
 @testable import Cities
 
-struct CityListTests {
+struct ViewModelTests {
     
-    struct ViewModel {
+    struct CityList {
         let networkClient = NetworkClientMock()
         let viewModel: CityListViewModelProtocol
         
@@ -59,5 +59,20 @@ struct CityListTests {
             }
         }
     }
-
+    
+    struct CityDetail {
+        let networkClient: NetworkClientProtocol
+        let repository: CityRepositoryProtocol
+        let useCase: FetchCityDetailUseCaseProtocol
+        let viewModel: CityDetailViewModelProtocol
+        
+        init() {
+            networkClient = NetworkClientMock()
+            repository = CityRepository(networkClient: networkClient)
+            useCase = FetchCityDetailUseCase(repository: repository)
+            viewModel = CityDetailViewModel(cityName: "Buenos Aires",
+                                            countryCode: "AR",
+                                            useCase: useCase)
+        }
+    }
 }
