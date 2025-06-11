@@ -26,6 +26,7 @@ final class NetworkRestClient: NetworkClientProtocol {
             let (data, response) = try await session.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
+                debugPrint("Invalid URL: \(url.absoluteString)")
                 throw CustomError.serviceError(url.absoluteString)
             }
             
@@ -33,10 +34,11 @@ final class NetworkRestClient: NetworkClientProtocol {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             dto = try decoder.decode(T.self, from: data)
         } catch let error as DecodingError {
-            debugPrint(error)
-            throw CustomError.decodeError(url.absoluteString)
+            debugPrint("Decode error | \(url.absoluteString) | \(error.localizedDescription)")
+            throw CustomError.decodeError("Ups! There was an error with our service.")
         } catch {
-            throw CustomError.networkError(url.absoluteString)
+            debugPrint("Service error | \(url.absoluteString) | \(error.localizedDescription)")
+            throw CustomError.serviceError("There was an error with our provider.")
         }
         
         return dto

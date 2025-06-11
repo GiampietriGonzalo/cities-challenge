@@ -10,11 +10,11 @@ import Foundation
 final class NetworkClientMock: NetworkClientProtocol {
     
     var dto: Decodable?
-    var customError: CustomError?
+    var customError: CustomError = .serviceError("error")
     
     func fetch<T: Decodable>(from url: URL) async throws(CustomError) -> T {
         guard let dto = dto as? T else {
-            throw customError ?? .unknown
+            throw customError
         }
         
         return dto

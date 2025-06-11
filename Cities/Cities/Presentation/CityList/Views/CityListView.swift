@@ -28,7 +28,13 @@ struct CityListView: View {
                 buildCityScreen(cities: viewData.cityLocations)
                     .navigationTitle("Cities")
             case .onError(let error):
-                Text("Error: \(error)")
+                switch error {
+                case let .invalidUrl(message),
+                    let .serviceError(message),
+                    let .decodeError(message):
+                    ServiceErrorView(message: message,
+                                     action: { Task { await viewModel.load() }} )
+                }
             }
         }
         .onChange(of: viewModel.state) {
@@ -62,51 +68,43 @@ struct CityListView: View {
         }
     }
 
-    func buildNoResultsView() -> some View {
-        ContentUnavailableView("City not found",
-                               systemImage: "magnifyingglass",
-                               description: Text("No results for **\(searchText)**"))
-    }
-        
     @ViewBuilder
     func buildCityListWithMap(cities: [CityLocationViewData]) -> some View {
-        if isSearching, cities.isEmpty {
-            buildNoResultsView()
-        } else {
-            HStack(spacing: 0) {
-                VStack {
+        HStack(spacing: 0) {
+            VStack {
+                HStack {
                     HStack {
-                        HStack {
-                            Image(systemName: "magnifyingglass")
-                                .renderingMode(.template)
-                                .padding(.vertical, 4)
-                                .padding(.leading, 8)
-                            TextField("Search by name", text: $searchText)
-                                .textFieldStyle(.plain)
-                                .padding(.vertical, 4)
-                                .padding(.trailing, 8)
-                        }
-                        .frame(height: 32)
-                        .background(Color.gray.opacity(0.1))
-                        .foregroundStyle(.secondary)
-                        .cornerRadius(8)
-                        .padding(.horizontal, 24)
+                        Image(systemName: "magnifyingglass")
+                            .renderingMode(.template)
+                            .padding(.vertical, 4)
+                            .padding(.leading, 8)
+                        TextField("Search by name", text: $searchText)
+                            .textFieldStyle(.plain)
+                            .padding(.vertical, 4)
+                            .padding(.trailing, 8)
                     }
-                    .ignoresSafeArea()
-                    .padding(.top, 16)
-                    
-                    buildCityList(cities: cities)
+                    .frame(height: 32)
+                    .background(Color.gray.opacity(0.1))
+                    .foregroundStyle(.secondary)
+                    .cornerRadius(8)
+                    .padding(.horizontal, 24)
                 }
-                .frame(width: 250)
-                MapView(viewData: $mapViewData)
+                .ignoresSafeArea()
+                .padding(.top, 16)
+                
+                buildCityList(cities: cities)
             }
+            .frame(width: 250)
+            
+            MapView(viewData: $mapViewData)
         }
     }
     
     @ViewBuilder
     func buildCityList(cities: [CityLocationViewData]) -> some View {
         if isSearching, cities.isEmpty {
-            buildNoResultsView()
+            NoResultsErrorView(message: searchText)
+                .ignoresSafeArea()
         } else {
             ScrollViewReader { proxy in
                 ScrollView {
