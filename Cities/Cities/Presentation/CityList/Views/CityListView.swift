@@ -26,6 +26,7 @@ struct CityListView: View {
                     .task { await viewModel.load() }
             case let .loaded(viewData):
                 buildCityScreen(cities: viewData.cityLocations)
+                    .navigationTitle("Cities")
             case .onError(let error):
                 Text("Error: \(error)")
             }
@@ -38,57 +39,105 @@ struct CityListView: View {
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
         }
-        .navigationTitle("Cities")
+        .onAppear {
+            selectedCityId = nil
+        }
+        .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
         .ignoresSafeArea(.keyboard)
     }
     
     @ViewBuilder
     func buildCityScreen(cities: [CityLocationViewData]) -> some View {
         Group {
-            if isSearching, cities.isEmpty {
-                buildNoResultsView()
-            } else if deviceOrientation.isLandscape {
+            if deviceOrientation.isLandscape {
                 buildCityListWithMap(cities: cities)
             } else {
                 buildCityList(cities: cities)
+                    .modifier(SearchViewModifier(searchText: $searchText, prompt: "Search by name"))
             }
         }
-        .modifier(SearchViewModifier(searchText: $searchText, prompt: "Search by name"))
         .onChange(of: searchText) {
             guard case let .loaded(viewData) = viewModel.state else { return }
             viewData.onFilter(searchText)
         }
     }
-    
+
     func buildNoResultsView() -> some View {
         ContentUnavailableView("City not found",
                                systemImage: "magnifyingglass",
                                description: Text("No results for **\(searchText)**"))
     }
         
+    @ViewBuilder
     func buildCityListWithMap(cities: [CityLocationViewData]) -> some View {
-        HStack(spacing: 0) {
-            buildCityList(cities: cities)
+        if isSearching, cities.isEmpty {
+            buildNoResultsView()
+        } else {
+            HStack(spacing: 0) {
+                VStack {
+                    HStack {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .renderingMode(.template)
+                                .padding(.vertical, 4)
+                                .padding(.leading, 8)
+                            TextField("Search by name", text: $searchText)
+                                .textFieldStyle(.plain)
+                                .padding(.vertical, 4)
+                                .padding(.trailing, 8)
+                        }
+                        .frame(height: 32)
+                        .background(Color.gray.opacity(0.1))
+                        .foregroundStyle(.secondary)
+                        .cornerRadius(8)
+                        .padding(.horizontal, 24)
+                    }
+                    .ignoresSafeArea()
+                    .padding(.top, 16)
+                    
+                    buildCityList(cities: cities)
+                }
                 .frame(width: 250)
-            MapView(viewData: $mapViewData)
+                MapView(viewData: $mapViewData)
+            }
         }
     }
     
+    @ViewBuilder
     func buildCityList(cities: [CityLocationViewData]) -> some View {
-        ScrollView {
-            LazyVStack {
-                ForEach(cities) { cityViewData in
-                    CityCellView(viewData: cityViewData)
-                        .onTapGesture {
-                            cityViewData.onSelect(deviceOrientation.isLandscape)
-                            selectedCityId = cityViewData.id
+        if isSearching, cities.isEmpty {
+            buildNoResultsView()
+        } else {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack {
+                        ForEach(cities) { cityViewData in
+                            CityCellView(viewData: cityViewData)
+                                .onTapGesture {
+                                    cityViewData.onSelect(deviceOrientation.isLandscape)
+                                    selectedCityId = cityViewData.id
+                                }
+                                .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : .clear)
                         }
-                        .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : Color.white)
+                    }
+                    .background(
+                        GeometryReader { geo in
+                            Color.clear
+                                .preference(key: ScrollOffsetKey.self, value: geo.frame(in: .named("scroll")).minY)
+                        }
+                    )
                 }
+                .ignoresSafeArea(.container, edges: .horizontal)
+                .scrollIndicators(.hidden)
             }
         }
-        .ignoresSafeArea(.container, edges: .horizontal)
-        .scrollIndicators(.hidden)
+    }
+}
+
+private struct ScrollOffsetKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value += nextValue()
     }
 }
 
