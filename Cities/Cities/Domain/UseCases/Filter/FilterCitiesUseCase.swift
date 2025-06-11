@@ -47,9 +47,7 @@ struct CityTrie {
     func search(prefix: String) -> [CityLocationViewData] {
         var current = root
         for char in prefix {
-            guard let node = current.children[char] else {
-                return []
-            }
+            guard let node = current.children[char] else { return [] }
             current = node
         }
         return current.cities

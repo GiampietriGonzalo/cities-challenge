@@ -8,58 +8,64 @@
 import Testing
 @testable import Cities
 
- struct TrieFilterCitiesUseCaseTests {
+ struct FilterCitiesUseCaseTests {
 
-    private let cities: [CityLocation] = [
-        CityLocation(id: 1, name: "Alabama", country: "US", coordinate: .init(latitude: 0, longitude: 0)),
-        CityLocation(id: 2, name: "Albuquerque", country: "US", coordinate: .init(latitude: 0, longitude: 0)),
-        CityLocation(id: 3, name: "Anaheim", country: "US", coordinate: .init(latitude: 0, longitude: 0)),
-        CityLocation(id: 4, name: "Arizona", country: "US", coordinate: .init(latitude: 0, longitude: 0)),
-        CityLocation(id: 5, name: "Sydney", country: "AU", coordinate: .init(latitude: 0, longitude: 0))
+    private let cities: [CityLocationViewData] = [
+        CityLocationViewData(id: 1, title: "Alabama", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
+        
+        CityLocationViewData(id: 2, title: "Albuquerque", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
+        
+        CityLocationViewData(id: 3, title: "Anaheim", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
+        
+        CityLocationViewData(id: 4, title: "Arizona", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {})
     ]
     
     let useCase: FilterCitiesUseCaseProtocol
     
     init() {
         useCase = FilterCitiesUseCase()
+        useCase.setup(with: cities)
     }
     
 
-    @Test func testFilterExactPrefix() {
+    @Test func filterExactPrefix() {
         let result = useCase.execute(cities: cities, filterBy: "Al")
-
         let expected = ["Alabama", "Albuquerque"]
-        let resultNames = result.map { $0.name }
+        let resultNames = result.map { $0.title }
 
         #expect(resultNames == expected)
     }
 
-    @Test func testFilterSingleCity() {
+    @Test func filterSingleCity() {
         let result = useCase.execute(cities: cities, filterBy: "Alb")
 
         #expect(result.count == 1)
-        #expect(result.first?.name == "Albuquerque")
+        #expect(result.first?.title == "Albuquerque")
     }
 
-    @Test func testFilterCaseInsensitive() {
+    @Test func filterCaseInsensitive() {
         let result = useCase.execute(cities: cities, filterBy: "a")
-
-        let resultNames = result.map { $0.name }
+        let resultNames = result.map { $0.title }
         let expected = ["Alabama", "Albuquerque", "Anaheim", "Arizona"]
 
         #expect(resultNames == expected)
     }
 
-    @Test func testFilterNoMatch() {
+    @Test func filterNotMatch() {
         let result = useCase.execute(cities: cities, filterBy: "xyz")
-
         #expect(result.isEmpty)
     }
 
-    @Test func testEmptyPrefixReturnsAll() {
+    @Test func emptyPrefix() {
         let result = useCase.execute(cities: cities, filterBy: "")
-
         #expect(result.count == cities.count)
     }
+     
+     @Test func emptyList() {
+         let useCase = FilterCitiesUseCase()
+         useCase.setup(with: [])
+         let result = useCase.execute(cities: [], filterBy: "a")
+         #expect(result.count == 0)
+     }
 }
 

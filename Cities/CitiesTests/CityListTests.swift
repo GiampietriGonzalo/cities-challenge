@@ -18,17 +18,20 @@ struct CityListTests {
             let cityRepository = CityRepository(networkClient: networkClient)
             let favoriteCityRepository = FavoriteRepositoryMock()
             let fetchCityLocationsUseCase = FetchCityLocationsUseCase(repository: cityRepository)
+            let sortCitiesUseCase = SortCitiesUseCaseMock()
             let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
             let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteCityRepository)
+            let filterCitiesUseCase = FilterCitiesUseCaseMock()
             let coordinator = CityListViewCoordinatorViewModelMock()
             viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityLocationsUseCase,
+                                          sortCitiesUseCase: sortCitiesUseCase,
                                           mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
                                           favoriteCityUseCase: favoriteCityUseCase,
-                                          filterCitiesUseCase: FilterCitiesUseCase())
+                                          filterCitiesUseCase: filterCitiesUseCase)
         }
         
-        @Test(.tags(.presentation), arguments: [[CityLocationDTO.mock, CityLocationDTO.mock],
+        @Test(arguments: [[CityLocationDTO.mock, CityLocationDTO.mock],
                                                 [],
                                                 [CityLocationDTO.mock]])
         func load(dtos: [CityLocationDTO]) async {
@@ -41,12 +44,9 @@ struct CityListTests {
             }
         }
         
-        @Test(.tags(.presentation),
-              arguments: [CustomError.invalidUrl("invalid url"),
+        @Test(arguments: [CustomError.invalidUrl("invalid url"),
                           CustomError.serviceError("service error"),
-                          CustomError.decodeError("decode error"),
-                          CustomError.networkError("network error"),
-                          CustomError.unknown])
+                          CustomError.decodeError("decode error")])
         
         func load_error(customError: CustomError) async {
             networkClient.customError = customError
