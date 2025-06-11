@@ -10,13 +10,17 @@ import SwiftData
 
 struct CityListView: View {
     
-    var mapViewModel: MapViewModelProtocol?
+    //MARK: Observed Dependencies
     @State var viewModel: CityListViewModelProtocol
+    
+    //MARK: Observed properties
     @State private var deviceOrientation: UIDeviceOrientation = .unknown
     @State private var mapViewData: MapViewData = .empty
     @State private var searchText: String = ""
     @State private var selectedCityId: Int?
     @State private var showCancelButton = false
+    
+    //MARK: Computable properties
     private var isSearching: Bool { !searchText.isEmpty }
     
     var body: some View {
@@ -33,8 +37,9 @@ struct CityListView: View {
                 case let .invalidUrl(message),
                     let .serviceError(message),
                     let .decodeError(message):
-                    ServiceErrorView(message: message,
-                                     action: { Task { await viewModel.load() }} )
+                    ServiceErrorView(message: message, action: {
+                        Task { await viewModel.load() }
+                    })
                 }
             }
         }
@@ -53,6 +58,12 @@ struct CityListView: View {
         .ignoresSafeArea(.keyboard)
     }
     
+    
+}
+
+//MARK: View Builders
+private extension CityListView {
+   
     @ViewBuilder
     func buildCityScreen(cities: [CityLocationViewData]) -> some View {
         Group {
@@ -74,36 +85,12 @@ struct CityListView: View {
         HStack(spacing: 0) {
             VStack {
                 HStack {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .renderingMode(.template)
-                            .padding(.vertical, 4)
-                            .padding(.leading, 8)
-                        TextField("Search by name", text: $searchText, onEditingChanged: { editing in
-                            withAnimation {
-                                showCancelButton = editing
-                            }
-                        })
-                        .textFieldStyle(.plain)
-                        .padding(.vertical, 4)
-                        .padding(.trailing, 8)
-                        .autocorrectionDisabled()
-                    }
-                    .frame(height: 32)
-                    .background(Color.gray.opacity(0.1))
-                    .foregroundStyle(.secondary)
-                    .cornerRadius(8)
-                    .padding(.leading, 24)
-                    .padding(.trailing, !showCancelButton ? 24 : 4)
+                    buildLandingSearchBar()
                     
                     if showCancelButton {
-                        Button {
-                            searchText = ""
-                        } label: {
-                            Text("Cancel")
-                        }
-                        .padding(.trailing, 8)
-                        .transition(.scale)
+                        buildCancelButton()
+                            .padding(.trailing, 8)
+                            .transition(.scale)
                     }
                 }
                 .ignoresSafeArea()
@@ -135,24 +122,45 @@ struct CityListView: View {
                                 .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : .clear)
                         }
                     }
-                    .background(
-                        GeometryReader { geo in
-                            Color.clear
-                                .preference(key: ScrollOffsetKey.self, value: geo.frame(in: .named("scroll")).minY)
-                        }
-                    )
                 }
                 .ignoresSafeArea(.container, edges: .horizontal)
                 .scrollIndicators(.hidden)
             }
         }
     }
-}
-
-private struct ScrollOffsetKey: PreferenceKey {
-    static var defaultValue: CGFloat = 0
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value += nextValue()
+    
+    @ViewBuilder
+    func buildLandingSearchBar() -> some View {
+        HStack {
+            Image(systemName: "magnifyingglass")
+                .renderingMode(.template)
+                .padding(.vertical, 4)
+                .padding(.leading, 8)
+            TextField("Search by name", text: $searchText, onEditingChanged: { editing in
+                withAnimation {
+                    showCancelButton = editing
+                }
+            })
+            .textFieldStyle(.plain)
+            .padding(.vertical, 4)
+            .padding(.trailing, 8)
+            .autocorrectionDisabled()
+        }
+        .frame(height: 32)
+        .background(Color.gray.opacity(0.1))
+        .foregroundStyle(.secondary)
+        .cornerRadius(8)
+        .padding(.leading, 24)
+        .padding(.trailing, !showCancelButton ? 24 : 4)
+    }
+    
+    @ViewBuilder
+    func buildCancelButton() -> some View {
+        Button {
+            searchText = ""
+        } label: {
+            Text("Cancel")
+        }
     }
 }
 

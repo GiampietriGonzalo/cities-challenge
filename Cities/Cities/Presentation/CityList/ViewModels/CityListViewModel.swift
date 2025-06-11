@@ -110,7 +110,9 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     private func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {
         guard let cityLocation else { return nil }
         let cameraPositon = mapLocationToCameraPositionUseCase.execute(cityLocation)
-        return MapViewData(position: cameraPositon, currentCityName: cityLocation.name, cities: cityLocationViewDatas)
+        return MapViewData(position: cameraPositon,
+                           currentCityName: cityLocation.name,
+                           cities: cityLocationViewDatas)
     }
     
     @Sendable private func onFilter(text: String) {

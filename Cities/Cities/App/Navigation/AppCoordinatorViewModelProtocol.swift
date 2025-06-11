@@ -12,7 +12,7 @@ import Observation
  Manages and handles the navigation state of the App
  - Requires a NavigationPath
  */
-protocol AppCoordinatorViewModelProtocol: PushCoordinatorProtocol where NavigationType == CityListPushNavigationType {
+protocol AppCoordinatorViewModelProtocol: PushCoordinatorProtocol where NavigationType == AppPushNavigationType {
     associatedtype SomeView: View
     
     var navigationPath: NavigationPath { get }

@@ -19,7 +19,7 @@ final class CityListViewCoordinatorViewModelMock: AppCoordinatorViewModelProtoco
     var didPop: Bool = false
     var didPopToRoot: Bool = false
     
-    func push(_ item: CityListPushNavigationType) {
+    func push(_ item: AppPushNavigationType) {
         switch item {
         case .list:
             didPushList = true
@@ -38,7 +38,7 @@ final class CityListViewCoordinatorViewModelMock: AppCoordinatorViewModelProtoco
         didPopToRoot = true
     }
     
-    func build(for item: CityListPushNavigationType) -> some View {
+    func build(for item: AppPushNavigationType) -> some View {
         VStack {
             Text("Mock")
         }

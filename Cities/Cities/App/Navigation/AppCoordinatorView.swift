@@ -15,8 +15,8 @@ struct AppCoordinatorView<ViewModel: AppCoordinatorViewModelProtocol>: View {
     var viewModel: ViewModel
     var body: some View {
         NavigationStack(path: viewModel.navigationPathBinding) {
-            viewModel.build(for: CityListPushNavigationType.list)
-                .navigationDestination(for: CityListPushNavigationType.self) { item in
+            viewModel.build(for: AppPushNavigationType.list)
+                .navigationDestination(for: AppPushNavigationType.self) { item in
                     viewModel.build(for: item)
                 }
         }

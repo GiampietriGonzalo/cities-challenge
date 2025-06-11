@@ -1,5 +1,5 @@
 //
-//  CityListPushNavigationType.swift
+//  AppPushNavigationType.swift
 //  Cities
 //
 //  Created by Gonza Giampietri on 04/06/2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CityListPushNavigationType: PushNavigationType {
+enum AppPushNavigationType: PushNavigationType {
     var id: UUID { UUID() }
    
     case list
@@ -15,8 +15,8 @@ enum CityListPushNavigationType: PushNavigationType {
     case map(viewData: MapViewData)
 }
 
-extension CityListPushNavigationType: Hashable {
-    static func == (lhs: CityListPushNavigationType, rhs: CityListPushNavigationType) -> Bool {
+extension AppPushNavigationType: Hashable {
+    static func == (lhs: AppPushNavigationType, rhs: AppPushNavigationType) -> Bool {
         lhs.id == rhs.id
     }
     
