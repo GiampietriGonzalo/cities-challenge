@@ -16,7 +16,10 @@ final class FavoriteRepository: FavoriteRepositoryProtocol {
     }
     
     func insertFavorite(cityId: Int) throws(CustomError) {
-        guard let modelContext else { throw CustomError.serviceError("Context not available") }
+        guard let modelContext else {
+            throw CustomError.serviceError("Context not available")
+        }
+        
         let predicate = #Predicate<FavoriteCity> { $0.id == cityId }
         let request = FetchDescriptor<FavoriteCity>(predicate: predicate)
        
@@ -31,7 +34,9 @@ final class FavoriteRepository: FavoriteRepositoryProtocol {
     }
     
     func isFavorite(cityId: Int) throws(CustomError) -> Bool {
-        guard let modelContext else { throw CustomError.serviceError("Context not available") }
+        guard let modelContext else {
+            throw CustomError.serviceError("Context not available")
+        }
         let predicate = #Predicate<FavoriteCity> { $0.id == cityId }
         let request = FetchDescriptor<FavoriteCity>(predicate: predicate)
         
@@ -43,7 +48,9 @@ final class FavoriteRepository: FavoriteRepositoryProtocol {
     }
     
     private func save() throws(CustomError) {
-        guard let modelContext else { throw CustomError.serviceError("Context not available") }
+        guard let modelContext else {
+            throw CustomError.serviceError("Context not available")
+        }
         
         do {
             try modelContext.save()

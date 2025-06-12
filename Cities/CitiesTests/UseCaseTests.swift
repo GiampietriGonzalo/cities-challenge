@@ -9,7 +9,9 @@ import Testing
 @testable import Cities
 
 struct UseCasesTests {
-    struct FetchtCityDetail {
+    
+    //MARK: FetchCityDetailUseCase
+    struct FetchtCityDetailUseCaseTests {
         let networkClient = NetworkClientMock()
         let repository: CityRepositoryProtocol
         let fetchCityDetailUseCase: FetchCityDetailUseCaseProtocol
@@ -19,8 +21,8 @@ struct UseCasesTests {
             fetchCityDetailUseCase = FetchCityDetailUseCase(repository: repository)
         }
         
-        @Test(arguments: [("New York", "US"), ("", ""), ("", "AR"), ("Tandil", "")])
-        func fetchCityListSuccessfully(cityName: String, countryCode: String) async throws {
+        @Test(arguments: [("New York", "US"), ("Tandil", "")])
+        func fetchCityListSuccess(cityName: String, countryCode: String) async throws {
             networkClient.dto = CityDetailDTO(title: cityName,
                                               description: countryCode,
                                               extract: "",
@@ -34,23 +36,35 @@ struct UseCasesTests {
             #expect(result.countryCode == countryCode)
         }
         
+        @Test
+        func fetchCityFailureWithEmptyName() async throws {
+            do {
+                _ = try await fetchCityDetailUseCase.execute(name: "",
+                                                             countryCode: "")
+                #expect(Bool(false))
+            } catch {
+                #expect(error == .serviceError("City name is empty"))
+            }
+        }
+        
         @Test(arguments: [CustomError.decodeError("decode error"),
                           CustomError.serviceError("service error"),
                           CustomError.invalidUrl("invalid url")])
-        func fetchCityListFail(with error: CustomError) async throws {
-            networkClient.customError = error
+        func fetchCityListFail(with customError: CustomError) async throws {
+            networkClient.customError = customError
             networkClient.dto = nil
             
             do {
-                _ = try await fetchCityDetailUseCase.execute(name: "name",
-                                                           countryCode: "code")
+                _ = try await fetchCityDetailUseCase.execute(name: "name", countryCode: "code")
+                #expect(Bool(false))
             } catch {
-                #expect(networkClient.customError == error)
+                #expect(error == customError)
             }
         }
     }
     
-    struct FetchCityLocations {
+    //MARK: FetchCityLocationsUseCase
+    struct FetchCityLocationsUseCaseTests {
         let networkClient = NetworkClientMock()
         let repository: CityRepositoryProtocol
         let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
@@ -63,7 +77,7 @@ struct UseCasesTests {
         @Test(arguments: [[],
                           [CityLocationDTO.mock],
                           [CityLocationDTO.mock, CityLocationDTO.mock]])
-        func fetchCityLocationsSuccessfully(dtos: [CityLocationDTO]) async throws {
+        func fetchCityLocationsSuccess(dtos: [CityLocationDTO]) async throws {
             networkClient.dto = dtos
             let result = try await fetchCityListUseCase.execute()
             
@@ -82,6 +96,7 @@ struct UseCasesTests {
             networkClient.customError = error
             do {
                 _ = try await fetchCityListUseCase.execute()
+                #expect(Bool(false))
             } catch {
                 #expect(error == networkClient.customError)
             }
@@ -89,7 +104,8 @@ struct UseCasesTests {
         
     }
     
-    struct SortCities {
+    //MARK: SortCitiesUseCase
+    struct SortCitiesUseCaseTests {
         let sortCitiesUseCase: SortCitiesUseCaseProtocol
         
         init() {
@@ -110,7 +126,8 @@ struct UseCasesTests {
         }
     }
     
-    struct FavoriteCity {
+    //MARK: FavoriteCityUseCase
+    struct FavoriteCityUseCaseTests {
         let repository: FavoriteRepositoryMock
         let favoriteCityUseCase: FavoriteCityUseCaseProtocol
         
@@ -120,7 +137,7 @@ struct UseCasesTests {
         }
         
         @Test
-        func testInsertFavoriteCitySuccessfully() {
+        func testInsertFavoriteCitySuccess() {
             do {
                 let id = 123
                 try favoriteCityUseCase.insert(cityId: id)
@@ -132,48 +149,26 @@ struct UseCasesTests {
         
         @Test
         func testInsertFavoriteCityFail() {
-            repository.error = .serviceError("service error")
+            let customError = CustomError.serviceError("service error")
+            repository.error = customError
             
             do {
                 try favoriteCityUseCase.insert(cityId: 123)
-            } catch {
-                #expect(error == repository.error)
-            }
-        }
-    }
-    
-    struct MapLocationtoCameraPosition {
-        let useCase: MapLocationToCameraPositionUseCaseProtocol
-        
-        init() {
-            useCase = MapLocationToCameraPositionUseCase()
-        }
-        
-        @Test
-        func mapLocationToCameraPosition() {
-            let cityLocation = CityLocation.mock
-            let result = useCase.execute(cityLocation)
-            
-            guard let region = result.region else {
                 #expect(Bool(false))
-                return
+            } catch {
+                #expect(error == customError)
             }
-            
-            #expect(region.center.latitude == cityLocation.coordinate.latitude)
-            #expect(region.center.longitude == cityLocation.coordinate.longitude)
         }
     }
     
-    struct FilterCities {
+    //MARK: FilterCitiesUseCase
+    struct FilterCitiesUseCaseTests {
 
        private let cities: [CityLocationViewData] = [
-           CityLocationViewData(id: 1, title: "Alabama", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
-           
-           CityLocationViewData(id: 2, title: "Albuquerque", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
-           
-           CityLocationViewData(id: 3, title: "Anaheim", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {}),
-           
-           CityLocationViewData(id: 4, title: "Arizona", subtitle: "subtitle", detailButtonText: "detail", onSelect: { _ in }, onFavoriteTap: {}, onDetailButtonTap: {})
+        CityLocationViewData(id: 1, title: "Alabama", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
+           CityLocationViewData(id: 2, title: "Albuquerque", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
+           CityLocationViewData(id: 3, title: "Anaheim", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
+           CityLocationViewData(id: 4, title: "Arizona", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init())
        ]
        
        let useCase: FilterCitiesUseCaseProtocol
@@ -224,5 +219,4 @@ struct UseCasesTests {
             #expect(result.count == 0)
         }
    }
-
 }

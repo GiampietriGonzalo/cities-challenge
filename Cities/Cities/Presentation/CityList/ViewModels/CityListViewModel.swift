@@ -6,6 +6,7 @@
 //
 
 import Observation
+import Combine
 
 @Observable
 final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: CityListViewModelProtocol {
@@ -14,10 +15,11 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     private let coordinator: Coordinator
     private let fetchCityListUseCase: FetchCityLocationsUseCaseProtocol
     private let sortCitiesUseCase: SortCitiesUseCaseProtocol
-    private let mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol
     private let favoriteCityUseCase: FavoriteCityUseCaseProtocol
     private let filterCitiesUseCase: FilterCitiesUseCaseProtocol
-    
+    private let viewDataMapper: CityLocationMapperProtocol
+    private let locationMapper: LocationMapperProtocol
+
     //MARK: Useful properties
     private var cityLocationViewDatas: [CityLocationViewData] = []
     private var filteredCityLocationViewDatas: [CityLocationViewData] = []
@@ -27,18 +29,26 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     //MARK: Observed State
     var state: CityListViewState = .loading
     
+    //MARK: Pubishers
+    private var subscriptions: Set<AnyCancellable> = []
+    private let actionPublisher: PassthroughSubject<CityListAction, Never> = .init()
+    private let onFilterPublisher: PassthroughSubject<String, Never> = .init()
+    
     init(coordinator: Coordinator,
          fetchCityListUseCase: FetchCityLocationsUseCaseProtocol,
          sortCitiesUseCase: SortCitiesUseCaseProtocol,
-         mapLocationToCameraPositionUseCase: MapLocationToCameraPositionUseCaseProtocol,
          favoriteCityUseCase: FavoriteCityUseCaseProtocol,
-         filterCitiesUseCase: FilterCitiesUseCaseProtocol) {
+         filterCitiesUseCase: FilterCitiesUseCaseProtocol,
+         viewDataMapper: CityLocationMapperProtocol,
+         locationMapper: LocationMapperProtocol) {
         self.coordinator = coordinator
         self.fetchCityListUseCase = fetchCityListUseCase
         self.sortCitiesUseCase = sortCitiesUseCase
-        self.mapLocationToCameraPositionUseCase = mapLocationToCameraPositionUseCase
         self.favoriteCityUseCase = favoriteCityUseCase
         self.filterCitiesUseCase = filterCitiesUseCase
+        self.viewDataMapper = viewDataMapper
+        self.locationMapper = locationMapper
+        self.subscribeToPublishers()
     }
     
     @MainActor
@@ -55,68 +65,87 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
             self.state = .onError(error)
         }
     }
-   
-    private func loadState(with cityViewDatas: [CityLocationViewData]) {
-        self.state = .loaded(.init(cityLocations: cityViewDatas,
-                                   mapViewData: mapViewData,
-                                   onFilter: onFilter))
+    
+}
+
+//MARK: Configuration
+private extension CityListViewModel {
+    
+    func subscribeToPublishers() {
+        actionPublisher.sink { [weak self] action in
+            guard let self else { return }
+            switch action {
+            case let .select(cityId, orientationisLandscape):
+                self.handleOnSelectCity(cityId: cityId, orientationIsLandscape: orientationisLandscape)
+            case let .seeDetail(cityId):
+                self.handleSeeDetails(cityId: cityId)
+            case let .tapFavorite(cityId):
+                self.handleTapOnFavorite(cityId: cityId)
+            }
+        }.store(in: &subscriptions)
+        
+        onFilterPublisher.sink { [weak self] text in
+            guard let self else { return }
+            self.filteredCityLocationViewDatas = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
+            self.loadState(with: filteredCityLocationViewDatas)
+        }
+        .store(in: &subscriptions)
     }
     
-    private func configureProperties(with cities: [CityLocation]) {
+    func configureProperties(with cities: [CityLocation]) {
         self.cityLocationViewDatas = cities.map { mapToViewData(cityLocation: $0) }
         self.mapViewData = buildMapViewData(cityLocation: cityLocationModels.first)
     }
     
-    //TODO: Refact to a Use Case or Mapper
-    private func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
-        let title = cityLocation.name + ", " + cityLocation.country
-        let subtitle = "lat: " + cityLocation.coordinate.latitude.description + ", lon: " + cityLocation.coordinate.longitude.description
-        let buttonText = "Details"
-        
-        let onCitySelected: (Bool) -> Void = { [weak self] orientatioIsLandscape in
-            guard let self else { return }
-            let mapViewData = self.buildMapViewData(cityLocation: cityLocation)
-            let locationsViewDatas = filteredCityLocationViewDatas.isEmpty ? self.cityLocationViewDatas : self.filteredCityLocationViewDatas
-            
-            if orientatioIsLandscape {
-                self.state = .loaded(.init(cityLocations: locationsViewDatas,
-                                           mapViewData: mapViewData,
-                                           onFilter: self.onFilter))
-            } else if let mapViewData {
-                self.coordinator.push(.map(viewData: mapViewData))
-            }
-        }
-        
-        let onFavoriteTap: () -> Void = { [weak self]  in
-            guard let self else { return }
-            try? self.favoriteCityUseCase.insert(cityId: cityLocation.id)
-        }
-        
-        let onDetailTap: () -> Void = { [weak self] in
-            guard let self else { return }
-            self.coordinator.push(.detail(cityName: cityLocation.name, countryCode: cityLocation.country))
-        }
-        
-        return CityLocationViewData(id: cityLocation.id,
-                                    title: title,
-                                    subtitle: subtitle,
-                                    detailButtonText: buttonText,
-                                    onSelect: onCitySelected,
-                                    onFavoriteTap: onFavoriteTap,
-                                    onDetailButtonTap: onDetailTap)
+    func loadState(with cityViewDatas: [CityLocationViewData]) {
+        self.state = .loaded(.init(cityLocations: cityViewDatas,
+                                   mapViewData: mapViewData,
+                                   onFilterPublisher: onFilterPublisher))
+    }
+}
+
+//MARK: Map Data
+private extension CityListViewModel {
+    func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
+        viewDataMapper.map(from: cityLocation, actionPublisher: actionPublisher)
     }
     
-    //TODO: Refact to a Use Case or Mapper
-    private func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {
+    func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {
         guard let cityLocation else { return nil }
-        let cameraPositon = mapLocationToCameraPositionUseCase.execute(cityLocation)
+        let cameraPositon = locationMapper.map(cityLocation)
         return MapViewData(position: cameraPositon,
                            currentCityName: cityLocation.name,
                            cities: cityLocationViewDatas)
     }
+}
+
+//MARK: Handle Actions
+private extension CityListViewModel {
+    func handleOnSelectCity(cityId: Int, orientationIsLandscape: Bool) {
+        guard let cityLocation = self.getCity(for: cityId) else { return }
+        
+        let mapViewData = self.buildMapViewData(cityLocation: cityLocation)
+        let locationsViewDatas = filteredCityLocationViewDatas.isEmpty ? self.cityLocationViewDatas : self.filteredCityLocationViewDatas
+        
+        if orientationIsLandscape {
+            self.state = .loaded(.init(cityLocations: locationsViewDatas,
+                                       mapViewData: mapViewData,
+                                       onFilterPublisher: onFilterPublisher))
+        } else if let mapViewData {
+            self.coordinator.push(.map(viewData: mapViewData))
+        }
+    }
     
-    @Sendable private func onFilter(text: String) {
-        self.filteredCityLocationViewDatas = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
-        self.loadState(with: filteredCityLocationViewDatas)
+    func handleSeeDetails(cityId: Int) {
+        guard let cityLocation = self.getCity(for: cityId) else { return }
+        self.coordinator.push(.detail(cityName: cityLocation.name, countryCode: cityLocation.country))
+    }
+    
+    func handleTapOnFavorite(cityId: Int) {
+        try? self.favoriteCityUseCase.insert(cityId: cityId)
+    }
+    
+    func getCity(for id: Int) -> CityLocation? {
+        cityLocationModels.first { $0.id == id }
     }
 }

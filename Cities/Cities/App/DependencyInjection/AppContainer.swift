@@ -40,15 +40,17 @@ final class AppContainer {
         let favoriteRepository = FavoriteRepository(modelContext: modelContext)
         let fetchCityListUseCase = FetchCityLocationsUseCase(repository: repository)
         let sortCitiesUseCase = SortCitiesAlphabeticallyUseCase()
-        let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
         let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteRepository)
+        let viewDataMapper = CityLocationViewDataMapper()
+        let locationMapper = LocationMapper()
         let filterUseCase = FilterCitiesUseCase()
         let viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityListUseCase,
                                           sortCitiesUseCase: sortCitiesUseCase,
-                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
                                           favoriteCityUseCase: favoriteCityUseCase,
-                                          filterCitiesUseCase: filterUseCase)
+                                          filterCitiesUseCase: filterUseCase,
+                                          viewDataMapper: viewDataMapper,
+                                          locationMapper: locationMapper)
         
         return viewModel
     }

@@ -9,5 +9,5 @@ extension CityLocationDTO {
     static var mock = CityLocationDTO(_id: 1,
                                       name: "Mock",
                                       country: "Ar",
-                                      coord: .init(lat: 0, lon: 0))
+                                      coord: .init(lat: 123, lon: 123))
 }

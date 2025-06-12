@@ -76,7 +76,7 @@ private extension CityListView {
         }
         .onChange(of: searchText) {
             guard case let .loaded(viewData) = viewModel.state else { return }
-            viewData.onFilter(searchText)
+            viewData.onFilterPublisher.send(searchText)
         }
     }
 
@@ -116,7 +116,7 @@ private extension CityListView {
                         ForEach(cities) { cityViewData in
                             CityCellView(viewData: cityViewData)
                                 .onTapGesture {
-                                    cityViewData.onSelect(deviceOrientation.isLandscape)
+                                    cityViewData.actionsPublisher.send(.select(id: cityViewData.id, orientationIsLandscape: deviceOrientation.isLandscape))
                                     selectedCityId = cityViewData.id
                                 }
                                 .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : .clear)

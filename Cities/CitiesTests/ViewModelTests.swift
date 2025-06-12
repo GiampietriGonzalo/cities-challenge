@@ -10,7 +10,8 @@ import Testing
 
 struct ViewModelTests {
     
-    struct CityList {
+    //MARK: CityListViewModel
+    struct CityListViewModelTests {
         let networkClient = NetworkClientMock()
         let viewModel: CityListViewModelProtocol
         
@@ -19,26 +20,32 @@ struct ViewModelTests {
             let favoriteCityRepository = FavoriteRepositoryMock()
             let fetchCityLocationsUseCase = FetchCityLocationsUseCase(repository: cityRepository)
             let sortCitiesUseCase = SortCitiesUseCaseMock()
-            let mapLocationToCameraPositionUseCase = MapLocationToCameraPositionUseCase()
             let favoriteCityUseCase = FavoriteCityUseCase(repository: favoriteCityRepository)
             let filterCitiesUseCase = FilterCitiesUseCaseMock()
+            let viewDataMapper = CityLocationViewDataMapper()
+            let locationMapper = LocationMapper()
             let coordinator = CityListViewCoordinatorViewModelMock()
             viewModel = CityListViewModel(coordinator: coordinator,
                                           fetchCityListUseCase: fetchCityLocationsUseCase,
                                           sortCitiesUseCase: sortCitiesUseCase,
-                                          mapLocationToCameraPositionUseCase: mapLocationToCameraPositionUseCase,
                                           favoriteCityUseCase: favoriteCityUseCase,
-                                          filterCitiesUseCase: filterCitiesUseCase)
+                                          filterCitiesUseCase: filterCitiesUseCase,
+                                          viewDataMapper: viewDataMapper,
+                                          locationMapper: locationMapper)
         }
         
         @Test(arguments: [[CityLocationDTO.mock, CityLocationDTO.mock],
-                                                [],
-                                                [CityLocationDTO.mock]])
-        func load(dtos: [CityLocationDTO]) async {
+                          [CityLocationDTO.mock],
+                          []])
+        func testLoadSuccess(dtos: [CityLocationDTO]) async {
             networkClient.dto = dtos
             await viewModel.load()
             if case .loaded(let viewData) = viewModel.state {
                 #expect(viewData.cityLocations.count == dtos.count)
+                
+                // MapViewData must match the first location
+                #expect(viewData.mapViewData?.position.region?.center.latitude == dtos.first?.coord.lat)
+                #expect(viewData.mapViewData?.position.region?.center.latitude == dtos.first?.coord.lat)
             } else {
                 #expect(Bool(false))
             }
@@ -47,8 +54,7 @@ struct ViewModelTests {
         @Test(arguments: [CustomError.invalidUrl("invalid url"),
                           CustomError.serviceError("service error"),
                           CustomError.decodeError("decode error")])
-        
-        func load_error(customError: CustomError) async {
+        func testLoadFailure(customError: CustomError) async {
             networkClient.customError = customError
             await viewModel.load()
             
@@ -60,8 +66,9 @@ struct ViewModelTests {
         }
     }
     
-    struct CityDetail {
-        let networkClient: NetworkClientProtocol
+    //MARK: CityDetailViewModel
+    struct CityDetailViewModelTests {
+        let networkClient: NetworkClientMock
         let repository: CityRepositoryProtocol
         let useCase: FetchCityDetailUseCaseProtocol
         let viewModel: CityDetailViewModelProtocol
@@ -73,6 +80,34 @@ struct ViewModelTests {
             viewModel = CityDetailViewModel(cityName: "Buenos Aires",
                                             countryCode: "AR",
                                             useCase: useCase)
+        }
+        
+        @Test(arguments: [CityDetailDTO.mock])
+        func testLoadSuccess(dto: CityDetailDTO) async throws {
+            networkClient.dto = dto
+            await viewModel.load()
+            
+            if case .loaded(let viewData) = viewModel.state {
+                #expect(viewData.title == dto.title)
+                #expect(viewData.description == dto.description)
+                #expect(viewData.extract == dto.extract)
+            } else {
+                #expect(Bool(false))
+            }
+        }
+        
+        @Test(arguments: [CustomError.invalidUrl("invalid url"),
+                          CustomError.serviceError("service error"),
+                          CustomError.decodeError("decode error")])
+        func testLoadFailure(customError: CustomError) async throws {
+            networkClient.customError = customError
+            await viewModel.load()
+            
+            if case .onError(let error) = viewModel.state {
+                #expect(error == customError)
+            } else {
+                #expect(Bool(false))
+            }
         }
     }
 }

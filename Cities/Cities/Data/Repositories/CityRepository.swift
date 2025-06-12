@@ -23,6 +23,11 @@ final class CityRepository: CityRepositoryProtocol {
     }
     
     func fetchCityDetail(nameParam: String) async throws(CustomError) -> CityDetailDTO {
+        
+        guard !nameParam.isEmpty else {
+            throw CustomError.serviceError("City name is empty")
+        }
+        
         guard let url = EndpointBuilder.build(for: .detail(name: nameParam)) else {
             throw CustomError.invalidUrl("City detail url is not valid")
         }
