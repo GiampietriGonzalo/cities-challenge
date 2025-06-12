@@ -14,8 +14,12 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
     var body: some View {
             switch viewModel.state {
             case .loading:
-                Text("Loading...")
-                    .task { await viewModel.load() }
+                ProgressView {
+                    Text("Loading...")
+                }
+                .task {
+                    await viewModel.load()
+                }
             case .loaded(let viewData):
                 buildContent(with: viewData)
             case .onError(let error):

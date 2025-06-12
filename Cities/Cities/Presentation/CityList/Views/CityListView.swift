@@ -28,8 +28,12 @@ struct CityListView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                Text("Loading...")
-                    .task { await viewModel.load() }
+                ProgressView {
+                    Text("Loading...")
+                }
+                .task {
+                    await viewModel.load()
+                }
             case let .loaded(viewData):
                 buildCityScreen(cities: viewData.cityLocations)
                     .navigationTitle(Strings.CitList.title)

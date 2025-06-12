@@ -14,6 +14,7 @@ final class FetchCityDetailUseCase: FetchCityDetailUseCaseProtocol {
     }
     
     func execute(name: String, countryCode: String) async throws(CustomError) -> CityDetail {
-        try await repository.fetchCityDetail(nameParam: name).toDomainModel(with: countryCode)
+        let nameParam = name.folding(options: .diacriticInsensitive, locale: .current)
+        return try await repository.fetchCityDetail(nameParam: nameParam).toDomainModel(with: countryCode)
     }
 }
