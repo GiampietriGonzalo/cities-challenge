@@ -46,7 +46,9 @@ struct CityListView: View {
         .onChange(of: viewModel.state) {
             guard case .loaded(let viewData) = viewModel.state,
                   let mapViewData = viewData.mapViewData else { return }
-            self.mapViewData = mapViewData
+            withAnimation {
+                self.mapViewData = mapViewData
+            }
         }
         .onRotate { newOrientation in
             deviceOrientation = newOrientation
@@ -57,8 +59,6 @@ struct CityListView: View {
         .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
         .ignoresSafeArea(.keyboard)
     }
-    
-    
 }
 
 //MARK: View Builders
@@ -117,7 +117,8 @@ private extension CityListView {
                         ForEach(cities) { cityViewData in
                             CityCellView(viewData: cityViewData)
                                 .onTapGesture {
-                                    cityViewData.actionsPublisher.send(.select(id: cityViewData.id, orientationIsLandscape: deviceOrientation.isLandscape))
+                                    cityViewData.actionsPublisher.send(.select(id: cityViewData.id,
+                                                                               orientationIsLandscape: deviceOrientation.isLandscape))
                                     selectedCityId = cityViewData.id
                                 }
                                 .background(selectedCityId == cityViewData.id ? Color.gray.opacity(0.3) : .clear)
