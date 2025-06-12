@@ -19,6 +19,7 @@ struct CityListView: View {
     @State private var searchText: String = ""
     @State private var selectedCityId: Int?
     @State private var showCancelButton = false
+    @State private var showAbout = false
     
     //MARK: Computable properties
     private var isSearching: Bool { !searchText.isEmpty }
@@ -56,8 +57,16 @@ struct CityListView: View {
         .onAppear {
             selectedCityId = nil
         }
+        .onShake {
+            showAbout = true
+        }
+        .sheet(isPresented: $showAbout) {
+            AboutView()
+                .presentationDetents([.medium])
+        }
         .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
         .ignoresSafeArea(.keyboard)
+        .blur(radius: showAbout ? 4 : 0)
     }
 }
 
