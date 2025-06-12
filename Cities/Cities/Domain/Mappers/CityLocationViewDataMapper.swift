@@ -10,8 +10,8 @@ import Combine
 struct CityLocationViewDataMapper: CityLocationMapperProtocol {
     func map(from cityLocation: CityLocation, actionPublisher: PassthroughSubject<CityListAction, Never>) -> CityLocationViewData {
         let title = cityLocation.name + ", " + cityLocation.country
-        let subtitle = "lat: " + cityLocation.coordinate.latitude.description + ", lon: " + cityLocation.coordinate.longitude.description
-        let buttonText = "Details"
+        let subtitle = Strings.Common.latitudeInput + cityLocation.coordinate.latitude.description + ", " + Strings.Common.longitudeInput + cityLocation.coordinate.longitude.description
+        let buttonText = Strings.CitList.detailButtonText
         
         return CityLocationViewData(id: cityLocation.id,
                                     title: title,

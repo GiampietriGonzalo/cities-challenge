@@ -31,7 +31,7 @@ struct CityListView: View {
                     .task { await viewModel.load() }
             case let .loaded(viewData):
                 buildCityScreen(cities: viewData.cityLocations)
-                    .navigationTitle("Cities")
+                    .navigationTitle(Strings.CitList.title)
             case .onError(let error):
                 switch error {
                 case let .invalidUrl(message),
@@ -71,7 +71,8 @@ private extension CityListView {
                 buildCityListWithMap(cities: cities)
             } else {
                 buildCityList(cities: cities)
-                    .modifier(SearchViewModifier(searchText: $searchText, prompt: "Search by name"))
+                    .modifier(SearchViewModifier(searchText: $searchText,
+                                                 prompt: Strings.CitList.searchPlaceholder))
             }
         }
         .onChange(of: searchText) {
@@ -132,11 +133,11 @@ private extension CityListView {
     @ViewBuilder
     func buildLandingSearchBar() -> some View {
         HStack {
-            Image(systemName: "magnifyingglass")
+            Image(systemName: Strings.CitList.icons.search)
                 .renderingMode(.template)
                 .padding(.vertical, 4)
                 .padding(.leading, 8)
-            TextField("Search by name", text: $searchText, onEditingChanged: { editing in
+            TextField(Strings.CitList.searchPlaceholder, text: $searchText, onEditingChanged: { editing in
                 withAnimation {
                     showCancelButton = editing
                 }
@@ -159,7 +160,7 @@ private extension CityListView {
         Button {
             searchText = ""
         } label: {
-            Text("Cancel")
+            Text(Strings.CitList.cancelButtonText)
         }
     }
 }
