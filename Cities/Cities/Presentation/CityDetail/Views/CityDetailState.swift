@@ -11,5 +11,5 @@
 enum CityDetailState {
     case loading
     case loaded(viewData: CityDetailViewData)
-    case onError(error: CustomError)
+    case onError
 }

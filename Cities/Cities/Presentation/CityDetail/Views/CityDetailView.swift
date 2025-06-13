@@ -14,15 +14,11 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
     var body: some View {
             switch viewModel.state {
             case .loading:
-                ProgressView {
-                    Text("Loading...")
-                }
-                .task {
-                    await viewModel.load()
-                }
+                LoadingView()
+                    .task { await viewModel.load() }
             case .loaded(let viewData):
                 buildContent(with: viewData)
-            case .onError(let error):
+            case .onError:
                 ContentUnavailableView("Something went wrong",
                                        systemImage: "exclamationmark.triangle",
                                        description: Text("City information not available"))

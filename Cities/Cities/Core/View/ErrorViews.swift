@@ -13,21 +13,19 @@ struct ServiceErrorView: View {
     
     var body: some View {
         ContentUnavailableView {
-            Label("Service error", systemImage: "icloud.slash")
+            Label(Strings.Errors.serviceError, systemImage: "icloud.slash")
         } description: {
             VStack {
                 Text(message)
                 if let action {
-                    Button("Retry") {
+                    Button(Strings.Errors.retryButtonText) {
                         action()
                     }
                 }
             }
         }
-        
     }
 }
-
 
 struct NoResultsErrorView: View {
     let message: String
@@ -39,4 +37,5 @@ struct NoResultsErrorView: View {
 
 #Preview {
     ServiceErrorView(message: "Something went wrong with our provider", action: {})
+    NoResultsErrorView(message: "searchedtext")
 }

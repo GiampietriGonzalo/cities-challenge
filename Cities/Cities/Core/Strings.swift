@@ -9,6 +9,7 @@ struct Strings {
     struct Common {
         static let latitudeInput = "lat: "
         static let longitudeInput = "long: "
+        static let loading = "Loading..."
     }
     
     struct CitList {
@@ -38,6 +39,10 @@ struct Strings {
             static let github = "https://github.com/GiampietriGonzalo"
             static let linkedin = "https://www.linkedin.com/in/giampietri-gonzalo/"
         }
-        
+    }
+    
+    struct Errors {
+        static let serviceError = "Service error"
+        static let retryButtonText = "Retry"
     }
 }

@@ -28,12 +28,8 @@ struct CityListView: View {
         Group {
             switch viewModel.state {
             case .loading:
-                ProgressView {
-                    Text("Loading...")
-                }
-                .task {
-                    await viewModel.load()
-                }
+                LoadingView()
+                    .task { await viewModel.load() }
             case let .loaded(viewData):
                 buildCityScreen(cities: viewData.cityLocations)
                     .navigationTitle(Strings.CitList.title)
@@ -83,9 +79,8 @@ private extension CityListView {
             if deviceOrientation.isLandscape {
                 buildCityListWithMap(cities: cities)
             } else {
+                SearchBarView(searchText: $searchText, showCancelButton: $showCancelButton)
                 buildCityList(cities: cities)
-                    .modifier(SearchViewModifier(searchText: $searchText,
-                                                 prompt: Strings.CitList.searchPlaceholder))
             }
         }
         .onChange(of: searchText) {
@@ -98,17 +93,9 @@ private extension CityListView {
     func buildCityListWithMap(cities: [CityLocationViewData]) -> some View {
         HStack(spacing: 0) {
             VStack {
-                HStack {
-                    buildLandingSearchBar()
-                    
-                    if showCancelButton {
-                        buildCancelButton()
-                            .padding(.trailing, 8)
-                            .transition(.scale)
-                    }
-                }
-                .ignoresSafeArea()
-                .padding(.top, 16)
+                SearchBarView(searchText: $searchText, showCancelButton: $showCancelButton)
+                    .ignoresSafeArea()
+                    .padding(.top, 16)
                 
                 buildCityList(cities: cities)
             }
@@ -141,40 +128,6 @@ private extension CityListView {
                 .ignoresSafeArea(.container, edges: .horizontal)
                 .scrollIndicators(.hidden)
             }
-        }
-    }
-    
-    @ViewBuilder
-    func buildLandingSearchBar() -> some View {
-        HStack {
-            Image(systemName: Strings.CitList.icons.search)
-                .renderingMode(.template)
-                .padding(.vertical, 4)
-                .padding(.leading, 8)
-            TextField(Strings.CitList.searchPlaceholder, text: $searchText, onEditingChanged: { editing in
-                withAnimation {
-                    showCancelButton = editing
-                }
-            })
-            .textFieldStyle(.plain)
-            .padding(.vertical, 4)
-            .padding(.trailing, 8)
-            .autocorrectionDisabled()
-        }
-        .frame(height: 32)
-        .background(Color.gray.opacity(0.1))
-        .foregroundStyle(.secondary)
-        .cornerRadius(8)
-        .padding(.leading, 24)
-        .padding(.trailing, !showCancelButton ? 24 : 4)
-    }
-    
-    @ViewBuilder
-    func buildCancelButton() -> some View {
-        Button {
-            searchText = ""
-        } label: {
-            Text(Strings.CitList.cancelButtonText)
         }
     }
 }

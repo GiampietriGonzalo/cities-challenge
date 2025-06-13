@@ -30,7 +30,7 @@ final class CityDetailViewModel: CityDetailViewModelProtocol {
             let cityDetail = try await useCase.execute(name: cityName, countryCode: countryCode)
             state = .loaded(viewData: cityDetail.mapToViewData())
         } catch {
-            state = .onError(error: error)
+            state = .onError
         }
     }
 }
