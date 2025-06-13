@@ -219,4 +219,34 @@ struct UseCasesTests {
             #expect(result.count == 0)
         }
    }
+    
+    //MARK: ValidateCityUseCity
+    struct ValidateCityUseCityTest {
+        let useCase: ValidateCityUseCaseProtocol
+        
+        init() {
+            useCase = ValidateCityUseCase()
+        }
+        
+        
+        @Test(arguments: [CityDetail(title: "Buenos Aires",
+                                     countryCode: "AR",
+                                     description: "", extract: "",
+                                     image: "",
+                                     coordinates: .init(latitude: 123, longitude: 123))])
+        func validCity(city: CityDetail) {
+            let result = useCase.execute(city: city, latitude: 123, longitude: 123)
+            #expect(result)
+        }
+        
+        @Test(arguments: [CityDetail(title: "Buenos Aires",
+                                     countryCode: "AR",
+                                     description: "", extract: "",
+                                     image: "",
+                                     coordinates: .init(latitude: 123, longitude: 123))])
+        func invalidCity(city: CityDetail) {
+            let result = useCase.execute(city: city, latitude: 456, longitude: 456)
+            #expect(!result)
+        }
+    }
 }

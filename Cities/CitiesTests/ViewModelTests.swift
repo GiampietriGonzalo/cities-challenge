@@ -70,16 +70,21 @@ struct ViewModelTests {
     struct CityDetailViewModelTests {
         let networkClient: NetworkClientMock
         let repository: CityRepositoryProtocol
-        let useCase: FetchCityDetailUseCaseProtocol
+        let fetchCityDetailUseCase: FetchCityDetailUseCaseProtocol
+        let validateCityUseCase: ValidateCityUseCaseProtocol
         let viewModel: CityDetailViewModelProtocol
         
         init() {
             networkClient = NetworkClientMock()
             repository = CityRepository(networkClient: networkClient)
-            useCase = FetchCityDetailUseCase(repository: repository)
+            fetchCityDetailUseCase = FetchCityDetailUseCase(repository: repository)
+            validateCityUseCase = ValidateCityUseCase()
             viewModel = CityDetailViewModel(cityName: "Buenos Aires",
                                             countryCode: "AR",
-                                            useCase: useCase)
+                                            latitude: CityDetailDTO.mock.coordinates.lat,
+                                            longitude: CityDetailDTO.mock.coordinates.lon,
+                                            fetchCityDetailUseCase: fetchCityDetailUseCase,
+                                            validateCityUseCase: validateCityUseCase)
         }
         
         @Test(arguments: [CityDetailDTO.mock])
