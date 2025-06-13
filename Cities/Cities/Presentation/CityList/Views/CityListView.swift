@@ -127,6 +127,11 @@ private extension CityListView {
                 }
                 .ignoresSafeArea(.container, edges: .horizontal)
                 .scrollIndicators(.hidden)
+                .onAppear {
+                    guard let selectedCityId else { return }
+                    proxy.scrollTo(selectedCityId, anchor: .center)
+                    self.selectedCityId = nil
+                }
             }
         }
     }
