@@ -40,8 +40,11 @@ final class AppCoordinatorViewModel: AppCoordinatorViewModelProtocol{
             CityListView(viewModel: AppContainer.shared.buildCityListViewModel())
         case let .map(viewData):
             MapView(viewData: .constant(viewData))
-        case let .detail(cityName: city, countryCode: countryCode):
-            CityDetailView(viewModel: AppContainer.shared.buildCityDetailViewModel(cityName: city, countryCode: countryCode))
+        case let .detail(cityName: city, countryCode: countryCode, latitude, longitude):
+            CityDetailView(viewModel: AppContainer.shared.buildCityDetailViewModel(cityName: city,
+                                                                                   countryCode: countryCode,
+                                                                                   latitude: latitude,
+                                                                                   longitude: longitude))
         }
     }
 }

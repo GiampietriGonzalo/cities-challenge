@@ -67,10 +67,16 @@ final class AppContainer {
      * Initialize a CityDetailViewModel with all it's dependencies.
      * - Returns: a CityDetailViewModel
      */
-    func buildCityDetailViewModel(cityName: String, countryCode: String) -> CityDetailViewModel {
+    func buildCityDetailViewModel(cityName: String, countryCode: String, latitude: Double, longitude: Double) -> CityDetailViewModel {
         let repository = CityRepository(networkClient: networkClient)
-        let useCase = FetchCityDetailUseCase(repository: repository)
-        let viewModel = CityDetailViewModel(cityName: cityName, countryCode: countryCode, useCase: useCase)
+        let fetchCityDetailUseCase = FetchCityDetailUseCase(repository: repository)
+        let validateCityUseCase = ValidateCityUseCase()
+        let viewModel = CityDetailViewModel(cityName: cityName,
+                                            countryCode: countryCode,
+                                            latitude: latitude,
+                                            longitude: longitude,
+                                            fetchCityDetailUseCase: fetchCityDetailUseCase,
+                                            validateCityUseCase: validateCityUseCase)
         
         return viewModel
     }

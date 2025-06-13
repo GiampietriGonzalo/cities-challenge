@@ -138,7 +138,10 @@ private extension CityListViewModel {
     
     func handleSeeDetails(cityId: Int) {
         guard let cityLocation = self.getCity(for: cityId) else { return }
-        self.coordinator.push(.detail(cityName: cityLocation.name, countryCode: cityLocation.country))
+        self.coordinator.push(.detail(cityName: cityLocation.name,
+                                      countryCode: cityLocation.country,
+                                      latitude: cityLocation.coordinate.latitude,
+                                      longitude: cityLocation.coordinate.longitude))
     }
     
     func handleTapOnFavorite(cityId: Int) {

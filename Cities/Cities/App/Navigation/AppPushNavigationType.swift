@@ -11,7 +11,7 @@ enum AppPushNavigationType: PushNavigationType {
     var id: UUID { UUID() }
    
     case list
-    case detail(cityName: String, countryCode: String)
+    case detail(cityName: String, countryCode: String, latitude: Double, longitude: Double)
     case map(viewData: MapViewData)
 }
 

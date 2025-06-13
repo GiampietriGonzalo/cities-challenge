@@ -23,7 +23,7 @@ final class CityListViewCoordinatorViewModelMock: AppCoordinatorViewModelProtoco
         switch item {
         case .list:
             didPushList = true
-        case .detail(_, _):
+        case .detail(_, _, _, _):
             didPushDetail = true
         case .map(_):
             didPushMap = true

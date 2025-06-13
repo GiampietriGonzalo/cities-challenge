@@ -19,7 +19,6 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
                     .accessibilityIdentifier("LoadingView")
             case .loaded(let viewData):
                 buildContent(with: viewData)
-                    .accessibilityIdentifier("ContentView")
             case .onError:
                 ContentUnavailableView("Something went wrong",
                                        systemImage: "exclamationmark.triangle",
@@ -85,11 +84,15 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
             .navigationTitle(viewData.title)
         }
         .scrollIndicators(.hidden)
+        .accessibilityIdentifier("ContentView")
     }
 }
 
 #Preview {
     NavigationStack {
-        CityDetailView(viewModel: AppContainer.shared.buildCityDetailViewModel(cityName: "Buenos Aires", countryCode: "AR"))
+        CityDetailView(viewModel: AppContainer.shared.buildCityDetailViewModel(cityName: "Buenos Aires",
+                                                                               countryCode: "AR",
+                                                                               latitude: 0,
+                                                                               longitude: 0))
     }
 }
