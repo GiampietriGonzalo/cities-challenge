@@ -16,12 +16,15 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
             case .loading:
                 LoadingView()
                     .task { await viewModel.load() }
+                    .accessibilityIdentifier("LoadingView")
             case .loaded(let viewData):
                 buildContent(with: viewData)
+                    .accessibilityIdentifier("ContentView")
             case .onError:
                 ContentUnavailableView("Something went wrong",
                                        systemImage: "exclamationmark.triangle",
                                        description: Text("City information not available"))
+                .accessibilityIdentifier("ErrorView")
             }
     }
     
@@ -54,23 +57,25 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
                         HStack {
                             Text(viewData.subtitle)
                                 .font(.title2)
+                                .accessibilityIdentifier("Subtitle")
                             Spacer()
                         }
                         
                         HStack {
                             Text(viewData.description)
                                 .font(.caption)
+                                .accessibilityIdentifier("Description")
                             Spacer()
                         }
                         
                         HStack {
                             Text(viewData.extract)
+                                .accessibilityIdentifier("Extract")
                                 .font(.body)
                             Spacer()
                         }
                         .padding(.top, 8)
                     }
-                    
                 }
                 .padding(.leading, 16)
                 .padding(.top, 8)

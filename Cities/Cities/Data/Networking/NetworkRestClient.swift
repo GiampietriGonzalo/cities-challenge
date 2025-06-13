@@ -14,10 +14,10 @@ import Foundation
  * - Throws: A **CustomError** if something went wrong
  */
 final class NetworkRestClient: NetworkClientProtocol {
-    private var session = URLSession(configuration: .default)
+    private var session: URLSession = .shared
         
-    func configure(with configuration: URLSessionConfiguration) {
-        session = URLSession(configuration: configuration)
+    func configure(with session: URLSession) {
+        self.session = session
     }
     
     func fetch<T: Decodable>(from url: URL) async throws(CustomError) -> T {
