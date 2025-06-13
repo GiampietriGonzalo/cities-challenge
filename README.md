@@ -19,7 +19,10 @@ Each layer is isolated and communicates only through protocols, which enables te
 [ Data Layer (Repositories + DTOs + Networking + SwiftData Storage) ]
 ```
 
+### Architecture Design
 ![Architecture](./Diagrams/Architecture.drawio.png)
+
+### Coordinator Pattern
 ![CoordinatorPattern](./Diagrams/CoordinatorPattern.drawio.png)
 
 ### Design Choices
@@ -115,6 +118,32 @@ Cities/
 - Map feature uses native MapKit integration
 
 ---
+
+## 🔍 Filter Algorithm (Using Trie)
+
+To efficiently filter a large number of city names by prefix, we implement a Trie data structure.
+True lets us perform prefix search in linear time with respect to the length of the prefix, instead of having to iterate through all 200,000+ city names each time.
+
+### 🌲 What is a Trie?
+
+A trie is a specialized tree-shaped data structure designed for fast retrieval of strings by their prefix.
+Each node in the trie corresponds to a single character in a string.
+Paths from the root to a node form a prefix.
+For example, for the city “Salta”, the path s → a → l → t → a traces its spelling.
+
+## Algorithm Explained
+
+### Construction (Insert):
+We insert each city’s name into the trie char by char.
+
+For each character in the city’s name:
+- If a child node for that char doesn’t exist, we create it.
+- We move into that child and append the city to its cities array. This lets us quickly retrieve all matching cities for a given prefix later.
+
+### Search (Retrieve):
+To find all cities matching a prefix:
+- We start from the root and follow children matching each character in the prefix.
+- If we successfully match all prefix letters, we return the cities array at that node.
 
 ## 📬 Contact
 
