@@ -16,8 +16,11 @@ Each layer is isolated and communicates only through protocols, which enables te
         ⇅
 [ Domain Layer (UseCases + Entities + Protocols) ]
         ⇅
-[ Data Layer (Repositories + DTOs + Networking + SwiftData) ]
+[ Data Layer (Repositories + DTOs + Networking + SwiftData Storage) ]
 ```
+
+![Architecture](./Diagrams/Architecture.drawio.png)
+![CoordinatorPattern](./Diagrams/CoordinatorPattern.drawio.png)
 
 ### Design Choices
 
@@ -34,32 +37,48 @@ Each layer is isolated and communicates only through protocols, which enables te
 
 ```
 Cities/
-├── App/                     # App entry point & DI
-│   └── DependencyInjection/
+├── App/                                # App entry point
+│   └── DependencyInjection/            # DI
 │       └── AppContainer.swift
+│   └── Navigation/                     # Coordinator Pattern
+│       └── AppCoordinatorView.swift
+│       └── AppCoordinatorViewModelProtocol.swift
+│       └── AppCoordinatorViewModel.swift
+│       └── AppPushNavigationType.swift
+│   └── Resources/                      # Assets
 
-├── Presentation/            # SwiftUI Views + ViewModels
+
+├── Presentation/                       # SwiftUI Views + ViewModels + ViewDatas
 │   ├── CityList/
 │   │   ├── Views/
 │   │   ├── ViewModels/
+│   │   ├── ViewDatas/
 │   ├── CityDetail/
 │   │   ├── Views/
 │   │   ├── ViewModels/
-│   └── Shared/UIComponents/
+│   │   ├── ViewDatas/
+│   └── Map
+│   │   ├── Views/
+│   │   ├── ViewModels/
+│   │   ├── ViewDatas/
+│   └── About
 
-├── Domain/                  # Business logic & interfaces
+├── Domain/                             # Business logic & interfaces
 │   ├── Entities/
 │   ├── UseCases/
+│   ├── Mappers/
 
-├── Data/                    # Implementations, persistence & parsing
+├── Data/                               # Implementations, persistence & parsing
 │   ├── Repositories/
 │   ├── Networking/
 │   ├── DTOs/
-│   └── Models/              # SwiftData models
+│   └── Storage/                        # Local Persistance
+│       └── SwiftData/
+│           └── Models/
 
-├── Resources/               # Assets
-├── CitiesTests/             # Unit tests
-├── CitiesUITests/           # UI tests
+├── Resources/                          
+├── CitiesTests/                        # Unit tests
+├── CitiesUITests/                      # UI tests
 
 └── README.md
 ```
@@ -70,6 +89,7 @@ Cities/
 
 - `AppContainer` is the composition root and builds all dependencies.
 - Initialises and injects all dependencies incluiding Repositories and UseCases.
+- `AppContainer` mantains the AppCoordinator and ModelContext for local persistance.
 - ViewModels are injected into views at the root level.
 
 ---
@@ -90,9 +110,9 @@ Cities/
 
 ## 🗂 Assumptions & Decisions
 
-- Favorite status is persisted only by `cityID`
-- City details screen may include static or mock data beyond coordinates [Decision Pending]
-- Map screen uses native MapKit integration
+- Favorite status is persisted only by `cityId`
+- City details screen includes information fetched from Wikipedia API
+- Map feature uses native MapKit integration
 
 ---
 
