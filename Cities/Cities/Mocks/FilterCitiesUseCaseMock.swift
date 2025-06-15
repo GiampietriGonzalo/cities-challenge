@@ -6,6 +6,6 @@
 //
 
 final class FilterCitiesUseCaseMock: FilterCitiesUseCaseProtocol {
-    func setup(with cities: [CityLocationViewData]) {}
-    func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData] { cities }
+    func setup(with cities: [CityLocation]) {}
+    func execute(cities: [CityLocation], filterBy text: String) -> [CityLocation] { cities }
 }

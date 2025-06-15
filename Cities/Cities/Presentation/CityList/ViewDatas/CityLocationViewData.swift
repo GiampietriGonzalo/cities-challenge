@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-struct CityLocationViewData: Identifiable, Equatable {
+struct CityLocationViewData: Identifiable, Equatable, Hashable {
     let id: Int
     let title: String
     let subtitle: String
@@ -17,5 +17,9 @@ struct CityLocationViewData: Identifiable, Equatable {
     
     static func == (lhs: CityLocationViewData, rhs: CityLocationViewData) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }

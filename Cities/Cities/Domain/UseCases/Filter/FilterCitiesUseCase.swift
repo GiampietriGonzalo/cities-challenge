@@ -8,40 +8,40 @@
 final class FilterCitiesUseCase: FilterCitiesUseCaseProtocol {
     private let trie = CityTrie()
     
-    func setup(with cities: [CityLocationViewData]) {
+    func setup(with cities: [CityLocation]) {
         for city in cities { trie.insert(city: city) }
     }
     
-    func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData] {
+    func execute(cities: [CityLocation], filterBy text: String) -> [CityLocation] {
         guard !text.isEmpty else { return cities }
-        let prefix = text.folding(options: .diacriticInsensitive, locale: .current).lowercased()
-        
-        return trie.search(prefix: prefix)
+        return trie.search(prefix: text)
     }
 }
 
 // MARK: - Trie Structure
 /**
- * Node: Each node in the Trie represents a character in a string (e.g., "a", "l", "b"), and paths through the tree represent words or names (e.g., "alb" → "alabama").
+ * Node: Each node in the Trie represents a character in a string (e.g., "s", "a", "l"), and paths through the tree represent words or names (e.g., "sal" → "Salta").
  *      Each node stores:
  *          - Its children (a dictionary [Character: Node])
- *          - An array of matching CityLocationViewData entries at that path
+ *          - An array of matching CityLocation entries at that path
  *
  */
 struct CityTrie {
-    private class Node {
+    class Node {
         var children: [Character: Node] = [:]
-        var cities: [CityLocationViewData] = []
+        var cities: [CityLocation] = []
     }
     
-    private let root = Node()
+    let root = Node()
     
     /**
-     * Traverses the characters in the city’s name. At each character, it adds a new node (if it not exists) and appends the city to the cities list at that level
+     * Traverses the characters in the city’s name + city's country code. At each character, it adds a new node (if it not exists) and appends the city to the cities list at that level
      */
-    func insert(city: CityLocationViewData) {
+    func insert(city: CityLocation) {
         var current = root
-        for char in city.title.lowercased() {
+        let cityText = city.name + ", " + city.country
+        
+        for char in cityText {
             if current.children[char] == nil {
                 current.children[char] = Node()
             }
@@ -56,7 +56,7 @@ struct CityTrie {
     /**
      * The trie walks down nodes matching the prefix parameter. If the path exists, it returns the cities stored at that node.
      */
-    func search(prefix: String) -> [CityLocationViewData] {
+    func search(prefix: String) -> [CityLocation] {
         var current = root
         for char in prefix {
             guard let node = current.children[char] else { return [] }

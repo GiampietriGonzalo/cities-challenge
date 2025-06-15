@@ -11,7 +11,6 @@ protocol CityRepositoryProtocol {
     
     /**
      *  Fetchs the city locations
-     * - Parameter url: The endpoint to fetch the list
      * - Returns: A CityLocationDTO with the information
      * - Throws: An error if something goes wrong
      */

@@ -11,6 +11,7 @@ struct CityListViewData: Equatable {
     let cityLocations: [CityLocationViewData]
     let mapViewData: MapViewData?
     let onFilterPublisher: PassthroughSubject<String, Never>
+    let onFilterByFavoritesPublisher: PassthroughSubject<Bool, Never>
     
     static func == (lhs: CityListViewData, rhs: CityListViewData) -> Bool {
         lhs.cityLocations == rhs.cityLocations && lhs.mapViewData == rhs.mapViewData

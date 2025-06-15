@@ -123,22 +123,11 @@ struct RepositoryTests {
                 #expect(result.count == 1)
             }
 
-            @Test func testIsFavoriteWhenItemExists() throws {
-                try repository.insertFavorite(cityId: 999)
-                let isFavorite = try repository.isFavorite(cityId: 999)
-                #expect(isFavorite)
-            }
-
-            @Test func testIsFavoriteWhenItemNotExists() throws {
-                let isFavavorite = try repository.isFavorite(cityId: 888)
-                #expect(isFavavorite == false)
-            }
-
             @Test func testFailureWhenContextIsNil() {
-                let repo = FavoriteRepository(modelContext: nil)
+                let repository = FavoriteRepository(modelContext: nil)
 
                 do {
-                    _ = try repo.isFavorite(cityId: 167678)
+                    _ = try repository.fetchFavorites()
                     #expect(Bool(false))
                 } catch {
                     #expect(error == CustomError.serviceError("Context not available"))

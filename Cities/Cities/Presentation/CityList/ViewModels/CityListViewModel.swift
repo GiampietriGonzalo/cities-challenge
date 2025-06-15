@@ -19,12 +19,17 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     private let filterCitiesUseCase: FilterCitiesUseCaseProtocol
     private let viewDataMapper: CityLocationMapperProtocol
     private let locationMapper: LocationMapperProtocol
-
+    
     //MARK: Useful properties
-    private var cityLocationViewDatas: [CityLocationViewData] = []
-    private var filteredCityLocationViewDatas: [CityLocationViewData] = []
-    private var cityLocationModels: [CityLocation] = []
+    private var fullCityLocationViewDatas: [CityLocationViewData] = []
+    private var currentCityLocationViewDatas: [CityLocationViewData] = []
+    private var cityModelsDictionary: [Int: CityLocation] = [:]
+    private var cityModels: [CityLocation] { Array(cityModelsDictionary.values) }
+    private var favoriteCityIds: Set<Int> = []
+    
     private var mapViewData: MapViewData?
+    private var isFilteringByFavorite: Bool = false
+    private var textToFilter: String?
     
     //MARK: Observed State
     var state: CityListViewState = .loading
@@ -33,6 +38,7 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     private var subscriptions: Set<AnyCancellable> = []
     private let actionPublisher: PassthroughSubject<CityListAction, Never> = .init()
     private let onFilterPublisher: PassthroughSubject<String, Never> = .init()
+    private let onFilterByFavoritesPublisher: PassthroughSubject<Bool, Never> = .init()
     
     init(coordinator: Coordinator,
          fetchCityListUseCase: FetchCityLocationsUseCaseProtocol,
@@ -54,13 +60,14 @@ final class CityListViewModel<Coordinator: AppCoordinatorViewModelProtocol>: Cit
     @MainActor
     func load() async {
         self.state = .loading
-
+        
         do {
             let result = try await fetchCityListUseCase.execute()
-            self.cityLocationModels = sortCitiesUseCase.execute(cities: result)
-            self.configureProperties(with: cityLocationModels)
-            self.filterCitiesUseCase.setup(with: cityLocationViewDatas)
-            self.loadState(with: cityLocationViewDatas)
+            let sortedResult = sortCitiesUseCase.execute(cities: result)
+            self.buildCityModelsDictionary(with: sortedResult)
+            self.configureProperties(with: sortedResult)
+            self.filterCitiesUseCase.setup(with: sortedResult)
+            self.applyFilters()
         } catch let error {
             self.state = .onError(error)
         }
@@ -74,6 +81,7 @@ private extension CityListViewModel {
     func subscribeToPublishers() {
         actionPublisher.sink { [weak self] action in
             guard let self else { return }
+            
             switch action {
             case let .select(cityId, orientationisLandscape):
                 self.handleOnSelectCity(cityId: cityId, orientationIsLandscape: orientationisLandscape)
@@ -86,28 +94,82 @@ private extension CityListViewModel {
         
         onFilterPublisher.sink { [weak self] text in
             guard let self else { return }
-            self.filteredCityLocationViewDatas = filterCitiesUseCase.execute(cities: cityLocationViewDatas, filterBy: text)
-            self.loadState(with: filteredCityLocationViewDatas)
-        }
-        .store(in: &subscriptions)
+            self.textToFilter = text
+            self.applyFilters()
+            
+        }.store(in: &subscriptions)
+        
+        onFilterByFavoritesPublisher.sink { [weak self] isFilteringByFavorites in
+            guard let self else { return }
+            self.isFilteringByFavorite = isFilteringByFavorites
+            applyFilters()
+        }.store(in: &subscriptions)
+    }
+    
+    func buildCityModelsDictionary(with cities: [CityLocation]) {
+        cities.forEach { cityModelsDictionary[$0.id] = $0 }
     }
     
     func configureProperties(with cities: [CityLocation]) {
-        self.cityLocationViewDatas = cities.map { mapToViewData(cityLocation: $0) }
-        self.mapViewData = buildMapViewData(cityLocation: cityLocationModels.first)
+        self.fullCityLocationViewDatas = mapToViewData(cities: cities)
+        self.mapViewData = buildMapViewData(cityLocation: cities.first)
+        
+        do {
+            self.favoriteCityIds = Set(try favoriteCityUseCase.getFavorites())
+        } catch {
+            self.state = .onError(error)
+        }
+        
     }
     
     func loadState(with cityViewDatas: [CityLocationViewData]) {
         self.state = .loaded(.init(cityLocations: cityViewDatas,
                                    mapViewData: mapViewData,
-                                   onFilterPublisher: onFilterPublisher))
+                                   onFilterPublisher: onFilterPublisher,
+                                   onFilterByFavoritesPublisher:onFilterByFavoritesPublisher))
+    }
+}
+
+//MARK: Filters
+private extension CityListViewModel {
+    func applyFilters() {
+        if isFilteringByFavorite {
+            self.currentCityLocationViewDatas = fullCityLocationViewDatas.filter { favoriteCityIds.contains($0.id) }
+            
+            if let textToFilter, !textToFilter.isEmpty {
+                let filterCities =  filterCitiesUseCase.execute(cities: cityModels, filterBy: textToFilter)
+                let viewDatasFilterByText = mapToViewData(cities: filterCities)
+                let commonViewDatasBetweenCurrentAndFiltered = Array(Set(currentCityLocationViewDatas).intersection(Set(viewDatasFilterByText)))
+                
+                let modelsToSort = cityModelsDictionary.filter { entry in
+                    commonViewDatasBetweenCurrentAndFiltered.contains(where: { entry.key == $0.id })
+                }
+                
+                let sorted = sortCitiesUseCase.execute(cities: Array(modelsToSort.values))
+                self.currentCityLocationViewDatas = mapToViewData(cities: sorted)
+            }
+        } else if let textToFilter {
+            let sortedModels = sortCitiesUseCase.execute(cities: cityModels)
+            let filterCities =  filterCitiesUseCase.execute(cities: sortedModels, filterBy: textToFilter)
+            self.currentCityLocationViewDatas = mapToViewData(cities: filterCities)
+        } else {
+            self.currentCityLocationViewDatas = fullCityLocationViewDatas
+        }
+        
+        
+        self.state = .loaded(.init(
+            cityLocations: currentCityLocationViewDatas,
+            mapViewData: mapViewData,
+            onFilterPublisher: onFilterPublisher,
+            onFilterByFavoritesPublisher: onFilterByFavoritesPublisher
+        ))
     }
 }
 
 //MARK: Map Data
 private extension CityListViewModel {
-    func mapToViewData(cityLocation: CityLocation) -> CityLocationViewData {
-        viewDataMapper.map(from: cityLocation, actionPublisher: actionPublisher)
+    func mapToViewData(cities: [CityLocation]) -> [CityLocationViewData] {
+        cities.map { viewDataMapper.map(from: $0, actionPublisher: actionPublisher) }
     }
     
     func buildMapViewData(cityLocation: CityLocation?) -> MapViewData? {
@@ -115,7 +177,7 @@ private extension CityListViewModel {
         let cameraPositon = locationMapper.map(cityLocation)
         return MapViewData(position: cameraPositon,
                            currentCityName: cityLocation.name,
-                           cities: cityLocationViewDatas)
+                           cities: currentCityLocationViewDatas)
     }
 }
 
@@ -125,12 +187,13 @@ private extension CityListViewModel {
         guard let cityLocation = self.getCity(for: cityId) else { return }
         
         let mapViewData = self.buildMapViewData(cityLocation: cityLocation)
-        let locationsViewDatas = filteredCityLocationViewDatas.isEmpty ? self.cityLocationViewDatas : self.filteredCityLocationViewDatas
+        let locationsViewDatas = self.currentCityLocationViewDatas
         
         if orientationIsLandscape {
             self.state = .loaded(.init(cityLocations: locationsViewDatas,
                                        mapViewData: mapViewData,
-                                       onFilterPublisher: onFilterPublisher))
+                                       onFilterPublisher: onFilterPublisher,
+                                       onFilterByFavoritesPublisher: onFilterByFavoritesPublisher))
         } else if let mapViewData {
             self.coordinator.push(.map(viewData: mapViewData))
         }
@@ -146,9 +209,24 @@ private extension CityListViewModel {
     
     func handleTapOnFavorite(cityId: Int) {
         try? self.favoriteCityUseCase.insert(cityId: cityId)
+        self.updateFavoritesLocalPersistance(with: cityId)
+        self.applyFilters()
+    }
+    
+    func handleTapOnFilterByFavorite(isFilteringByFavorite: Bool) {
+        self.isFilteringByFavorite = isFilteringByFavorite
+        self.applyFilters()
     }
     
     func getCity(for id: Int) -> CityLocation? {
-        cityLocationModels.first { $0.id == id }
+        cityModels.first { $0.id == id }
+    }
+    
+    func updateFavoritesLocalPersistance(with id: Int) {
+        if favoriteCityIds.contains(id) {
+            self.favoriteCityIds.remove(id)
+        } else {
+            self.favoriteCityIds.insert(id)
+        }
     }
 }

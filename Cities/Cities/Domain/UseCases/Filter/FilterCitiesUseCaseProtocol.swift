@@ -8,17 +8,17 @@
 protocol FilterCitiesUseCaseProtocol {
     
     /**
-     * Set up the filter with a given array of CityLocationViewData
+     * Set up the filter with a given array of CityLocation
      * - Parameters:
-     *    - cities: An array of CityLocationViewData to configure the filter
+     *    - cities: An array of CityLocation to configure the filter
      */
-    func setup(with cities: [CityLocationViewData])
+    func setup(with cities: [CityLocation])
     
     /**
-     * Filter a given array of CityLocationViewData by a given text value
+     * Filter a given array of CityLocation by a given text value
      * - Parameters:
-     *    - cities: An array of CityLocationViewData to configure the filter
+     *    - cities: An array of CityLocation to configure the filter
      *    - text: An String value to filter the cities array
      */
-    func execute(cities: [CityLocationViewData], filterBy text: String) -> [CityLocationViewData]
+    func execute(cities: [CityLocation], filterBy text: String) -> [CityLocation]
 }

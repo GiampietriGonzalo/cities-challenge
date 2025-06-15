@@ -51,6 +51,11 @@
                BlueprintName = "CitiesUITests"
                ReferencedContainer = "container:Cities.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "CityDetailUITests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

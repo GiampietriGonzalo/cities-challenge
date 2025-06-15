@@ -19,6 +19,7 @@ struct CityListView: View {
     @State private var searchText: String = ""
     @State private var selectedCityId: Int?
     @State private var showCancelButton = false
+    @State private var isFilteringByFavorites: Bool = false
     @State private var showAbout = false
     
     //MARK: Computable properties
@@ -72,14 +73,16 @@ struct CityListView: View {
 
 //MARK: View Builders
 private extension CityListView {
-   
+    
     @ViewBuilder
     func buildCityScreen(cities: [CityLocationViewData]) -> some View {
         Group {
             if deviceOrientation.isLandscape {
                 buildCityListWithMap(cities: cities)
             } else {
-                SearchBarView(searchText: $searchText, showCancelButton: $showCancelButton)
+                SearchBarView(searchText: $searchText,
+                              showCancelButton: $showCancelButton,
+                              isFilteringByFavorites: $isFilteringByFavorites)
                 buildCityList(cities: cities)
             }
         }
@@ -87,15 +90,21 @@ private extension CityListView {
             guard case let .loaded(viewData) = viewModel.state else { return }
             viewData.onFilterPublisher.send(searchText)
         }
+        .onChange(of: isFilteringByFavorites) {
+            guard case let .loaded(viewData) = viewModel.state else { return }
+            viewData.onFilterByFavoritesPublisher.send(isFilteringByFavorites)
+        }
     }
-
+    
     @ViewBuilder
     func buildCityListWithMap(cities: [CityLocationViewData]) -> some View {
         HStack(spacing: 0) {
             VStack {
-                SearchBarView(searchText: $searchText, showCancelButton: $showCancelButton)
-                    .ignoresSafeArea()
-                    .padding(.top, 16)
+                SearchBarView(searchText: $searchText,
+                              showCancelButton: $showCancelButton,
+                              isFilteringByFavorites: $isFilteringByFavorites)
+                .ignoresSafeArea()
+                .padding(.top, 16)
                 
                 buildCityList(cities: cities)
             }

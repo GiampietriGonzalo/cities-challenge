@@ -16,4 +16,8 @@ final class FavoriteRepositoryMock: FavoriteRepositoryProtocol {
             favoriteCities.append(.init(id: cityId))
         }
     }
+    
+    func fetchFavorites() throws(CustomError) -> [Int] {
+        favoriteCities.map(\.id)
+    }
 }

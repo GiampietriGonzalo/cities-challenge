@@ -51,9 +51,9 @@ struct CityCellView: View {
                 .highPriorityGesture(TapGesture().onEnded {
                     if let index = favorites.firstIndex(where: { $0.id == viewData.id }) {
                         favorites[index].isFavorite.toggle()
-                    } else {
-                        viewData.actionsPublisher.send(.tapFavorite(id: viewData.id))
                     }
+                    
+                    viewData.actionsPublisher.send(.tapFavorite(id: viewData.id))
                 })
         }
         .padding(.vertical, 16)

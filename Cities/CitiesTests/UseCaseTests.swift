@@ -164,13 +164,14 @@ struct UseCasesTests {
     //MARK: FilterCitiesUseCase
     struct FilterCitiesUseCaseTests {
 
-       private let cities: [CityLocationViewData] = [
-        CityLocationViewData(id: 1, title: "Alabama", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
-           CityLocationViewData(id: 2, title: "Albuquerque", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
-           CityLocationViewData(id: 3, title: "Anaheim", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init()),
-           CityLocationViewData(id: 4, title: "Arizona", subtitle: "subtitle", detailButtonText: "detail", actionsPublisher: .init())
+       private let cities: [CityLocation] = [
+        .init(id: 1, name: "Buenos Aires", country: "AR", coordinate: .init(latitude: 0, longitude: 0)),
+        .init(id: 2, name: "Bahía Blanca", country: "AR", coordinate: .init(latitude: 0, longitude: 0)),
+        .init(id: 3, name: "Salta", country: "AR", coordinate: .init(latitude: 0, longitude: 0)),
+        .init(id: 4, name: "Suarez", country: "AR", coordinate: .init(latitude: 0, longitude: 0)),
+        .init(id: 3, name: "Santiago del Estero", country: "AR", coordinate: .init(latitude: 0, longitude: 0)),
+        .init(id: 3, name: "Santiago", country: "CL", coordinate: .init(latitude: 0, longitude: 0))
        ]
-       
        let useCase: FilterCitiesUseCaseProtocol
        
        init() {
@@ -180,27 +181,32 @@ struct UseCasesTests {
        
 
        @Test func filterExactPrefix() {
-           let result = useCase.execute(cities: cities, filterBy: "Al")
-           let expected = ["Alabama", "Albuquerque"]
-           let resultNames = result.map { $0.title }
+           let result = useCase.execute(cities: cities, filterBy: "B")
+           let expected = ["Buenos Aires", "Bahía Blanca"]
+           let resultNames = result.map { $0.name }
 
            #expect(resultNames == expected)
        }
 
        @Test func filterSingleCity() {
-           let result = useCase.execute(cities: cities, filterBy: "Alb")
+           let result = useCase.execute(cities: cities, filterBy: "Bue")
 
            #expect(result.count == 1)
-           #expect(result.first?.title == "Albuquerque")
+           #expect(result.first?.name == "Buenos Aires")
        }
 
        @Test func filterCaseInsensitive() {
-           let result = useCase.execute(cities: cities, filterBy: "a")
-           let resultNames = result.map { $0.title }
-           let expected = ["Alabama", "Albuquerque", "Anaheim", "Arizona"]
+           let result = useCase.execute(cities: cities, filterBy: "S")
+           let resultNames = result.map { $0.name }
+           let expected = ["Salta", "Suarez", "Santiago del Estero", "Santiago"]
 
            #expect(resultNames == expected)
        }
+        
+        @Test func filterCaseInsensitiveFailure() {
+            let result = useCase.execute(cities: cities, filterBy: "s")
+            #expect(result.isEmpty)
+        }
 
        @Test func filterNotMatch() {
            let result = useCase.execute(cities: cities, filterBy: "xyz")

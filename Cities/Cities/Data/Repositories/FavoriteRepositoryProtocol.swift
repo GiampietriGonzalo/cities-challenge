@@ -13,4 +13,11 @@ protocol FavoriteRepositoryProtocol {
      * - Throws: A **CustomError** if something went wrong
      */
     func insertFavorite(cityId: Int) throws(CustomError)
+    
+    /**
+     * Returns the ids of those items that are favorites
+     * - Returns: An array of  Int with thd ids of those items that are favorites
+     * - Throws: A **CustomError** if something went wrong
+     */
+    func fetchFavorites() throws(CustomError) -> [Int]
 }

@@ -32,16 +32,17 @@ final class FavoriteRepository: FavoriteRepositoryProtocol {
         
         try save()
     }
-    
-    func isFavorite(cityId: Int) throws(CustomError) -> Bool {
+  
+    func fetchFavorites() throws(CustomError) -> [Int] {
         guard let modelContext else {
             throw CustomError.serviceError("Context not available")
         }
-        let predicate = #Predicate<FavoriteCity> { $0.id == cityId }
+        
+        let predicate = #Predicate<FavoriteCity> { _ in true }
         let request = FetchDescriptor<FavoriteCity>(predicate: predicate)
         
         do {
-            return try modelContext.fetchCount(request) > 0
+            return try modelContext.fetch(request).filter(\.isFavorite).map(\.id)
         } catch {
             throw CustomError.serviceError("Error fetching favorites")
         }

@@ -11,6 +11,7 @@ struct SearchBarView: View {
     
     @Binding var searchText: String
     @Binding var showCancelButton: Bool
+    @Binding var isFilteringByFavorites: Bool
     
     var body: some View {
         HStack {
@@ -32,8 +33,8 @@ struct SearchBarView: View {
             .background(Color.gray.opacity(0.1))
             .foregroundStyle(.secondary)
             .cornerRadius(8)
-            .padding(.leading, 24)
-            .padding(.trailing, !showCancelButton ? 24 : 8)
+            .padding(.leading, 16)
+            .padding(.trailing, 8)
             
             if showCancelButton {
                 Button {
@@ -41,9 +42,22 @@ struct SearchBarView: View {
                 } label: {
                     Text(Strings.CitList.cancelButtonText)
                 }
-                .padding(.trailing, 16)
+                .padding(.trailing, 8)
                 .transition(.scale)
             }
+            
+            Button {
+                withAnimation {
+                    isFilteringByFavorites.toggle()
+                }            } label: {
+                Image(systemName: isFilteringByFavorites ?  "heart.slash" : "heart.fill")
+                    .resizable()
+                    .tint(isFilteringByFavorites ? .black : .red)
+                    .frame(width: 20, height: 20)
+            }
+            
+            .padding(.trailing, 16)
+            .transition(.opacity)
         }
     }
 }
@@ -51,6 +65,9 @@ struct SearchBarView: View {
 #Preview {
     @Previewable @State var searchText: String = ""
     @Previewable @State var showCancelButton: Bool = false
+    @Previewable @State var isFilteringByFavorites: Bool = false
     
-    SearchBarView(searchText: $searchText, showCancelButton: $showCancelButton)
+    SearchBarView(searchText: $searchText,
+                  showCancelButton: $showCancelButton,
+                  isFilteringByFavorites: $isFilteringByFavorites)
 }
