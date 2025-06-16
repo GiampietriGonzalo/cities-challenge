@@ -28,7 +28,7 @@ extension CityLocation {
     )
     
     static let mockZ = CityLocation(
-        id: 3,
+        id: 4,
         name: "Z",
         country: "AR",
         coordinate: .init(latitude: -23.232, longitude: -23.232)
