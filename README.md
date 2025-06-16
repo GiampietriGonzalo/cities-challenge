@@ -4,15 +4,15 @@ This is an iOS solution to the Ualá Mobile Challenge, implemented in **Swift** 
 
 ---
 
-## 📷 Screnshoots
-
 ## 📷 Screenshots
 
-<p align="center">
-  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="100">
-  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="100">
-  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="100">
-  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="100">
+<p align="left">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="200">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="200">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="200">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="200">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/7.png?raw=true" width="200">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/4.png?raw=true" height="200">
 </p>
 
 ## 🧱 Architecture
