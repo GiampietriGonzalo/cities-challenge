@@ -37,8 +37,8 @@ struct AboutView: View {
                             }
                         }
                         
-                        if let githubUrl = URL(string: Strings.About.Links.linkedin) {
-                            Link(destination: githubUrl) {
+                        if let linkedin = URL(string: Strings.About.Links.linkedin) {
+                            Link(destination: linkedin) {
                                 Label(title: { Text(Strings.About.linkedin) }, icon: {
                                     Image(.linkedin)
                                         .resizable()

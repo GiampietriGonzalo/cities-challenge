@@ -31,6 +31,7 @@ struct CityListView: View {
             case .loading:
                 LoadingView()
                     .task { await viewModel.load() }
+                    .accessibilityIdentifier("CityListLoadingView")
             case let .loaded(viewData):
                 buildCityScreen(cities: viewData.cityLocations)
                     .navigationTitle(Strings.CitList.title)
@@ -83,6 +84,7 @@ private extension CityListView {
                 SearchBarView(searchText: $searchText,
                               showCancelButton: $showCancelButton,
                               isFilteringByFavorites: $isFilteringByFavorites)
+                .accessibilityIdentifier("PortraitSearchBar")
                 buildCityList(cities: cities)
             }
         }
@@ -105,12 +107,14 @@ private extension CityListView {
                               isFilteringByFavorites: $isFilteringByFavorites)
                 .ignoresSafeArea()
                 .padding(.top, 16)
+                .accessibilityIdentifier("LandscapeSearchBar")
                 
                 buildCityList(cities: cities)
             }
             .frame(width: 250)
             
             MapView(viewData: $mapViewData)
+                .accessibilityIdentifier("LandscapeMapView")
         }
     }
     
@@ -119,6 +123,7 @@ private extension CityListView {
         if isSearching, cities.isEmpty {
             NoResultsErrorView(message: searchText)
                 .ignoresSafeArea()
+                .accessibilityIdentifier("NoResultView")
         } else {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -141,6 +146,7 @@ private extension CityListView {
                     proxy.scrollTo(selectedCityId, anchor: .center)
                     self.selectedCityId = nil
                 }
+                .accessibilityIdentifier("CityList")
             }
         }
     }

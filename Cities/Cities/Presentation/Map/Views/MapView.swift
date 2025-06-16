@@ -32,6 +32,7 @@ struct MapView: View {
                 MapScaleView()
             }
             .mapStyle(.standard(elevation: .realistic))
+            .accessibilityIdentifier("MapView")
         }
         .background(.mint)
     }

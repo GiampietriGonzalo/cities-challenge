@@ -7,11 +7,34 @@
 
 import XCTest
 
-// Test excluded: For some reason is not taking the accessibility identifier correctly
 final class CityDetailUITests: XCTestCase {
 
     private var app: XCUIApplication!
+        
+    private var loadingView: XCUIElement {
+        app.activityIndicators["CityDetailLoadingView"]
+    }
+    
+    private var contentView: XCUIElement {
+        app.staticTexts["CityDetailContentView"]
+    }
+    
+    private var errorView: XCUIElement {
+        app.staticTexts["CityDetailErrorView"]
+    }
 
+    private var subtitle: XCUIElement {
+        app.staticTexts["CityDetailSubtitle"]
+    }
+    
+    private var decription: XCUIElement {
+        app.staticTexts["CityDetailDescription"]
+    }
+    
+    private var extract: XCUIElement {
+        app.staticTexts["CityDetailExtract"]
+    }
+    
     override func setUp() {
         super.setUp()
         continueAfterFailure = false
@@ -21,29 +44,32 @@ final class CityDetailUITests: XCTestCase {
         app.launch()
     }
     
-    func testCityDetailsLoadCorrectly() {
-        let detailButton = app.buttons.firstMatch
-        XCTAssertTrue(detailButton.waitForExistence(timeout: 5))
-        detailButton.tap()
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+    }
     
-        let content = app.otherElements["ContentView"]
-        XCTAssertTrue(content.waitForExistence(timeout: 3))
-
-        let subtitle = content.staticTexts["Subtitle"]
-        XCTAssertTrue(subtitle.exists)
-
-        let description = content.staticTexts["Description"]
-        XCTAssertTrue(description.exists)
-
-        let extract = content.staticTexts["Extract"]
-        XCTAssertTrue(extract.exists)
+    func testCityDetailsLoadCorrectly() {
+        app.buttons.matching(identifier: "CityDetailButton").firstMatch.tap()
+        
+        XCTAssert(subtitle.waitForExistence(timeout: 2))
+        XCTAssert(decription.exists)
+        XCTAssert(extract.exists)
+        XCTAssert(!loadingView.exists)
     }
     
     func testCityDetailsErrorState() {
-        app.launchArguments = ["-UITestMode", "ErrorView"]
-        app.launch()
+        app.buttons.matching(identifier: "CityDetailButton").element(boundBy: 1).tap()
         
-        let errorView = app.otherElements["ErrorView"]
-        XCTAssertTrue(errorView.waitForExistence(timeout: 5))
+        XCTAssert(errorView.waitForExistence(timeout: 2))
+        XCTAssert(!contentView.exists)
+        XCTAssert(!subtitle.exists)
+        XCTAssert(!decription.exists)
+        XCTAssert(!extract.exists)
+        XCTAssert(!loadingView.exists)
+    }
+    
+    override func tearDown() {
+        app = nil
+        super.tearDown()
     }
 }

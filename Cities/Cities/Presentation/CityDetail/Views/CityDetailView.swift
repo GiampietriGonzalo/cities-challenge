@@ -16,14 +16,15 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
             case .loading:
                 LoadingView()
                     .task { await viewModel.load() }
-                    .accessibilityIdentifier("LoadingView")
+                    .accessibilityIdentifier("CityDetailLoadingView")
             case .loaded(let viewData):
                 buildContent(with: viewData)
+                    .accessibilityIdentifier("CityDetailContentView")
             case .onError:
                 ContentUnavailableView("Something went wrong",
                                        systemImage: "exclamationmark.triangle",
                                        description: Text("City information not available"))
-                .accessibilityIdentifier("ErrorView")
+                .accessibilityIdentifier("CityDetailErrorView")
             }
     }
     
@@ -56,20 +57,20 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
                         HStack {
                             Text(viewData.subtitle)
                                 .font(.title2)
-                                .accessibilityIdentifier("Subtitle")
+                                .accessibilityIdentifier("CityDetailSubtitle")
                             Spacer()
                         }
                         
                         HStack {
                             Text(viewData.description)
                                 .font(.caption)
-                                .accessibilityIdentifier("Description")
+                                .accessibilityIdentifier("CityDetailDescription")
                             Spacer()
                         }
                         
                         HStack {
                             Text(viewData.extract)
-                                .accessibilityIdentifier("Extract")
+                                .accessibilityIdentifier("CityDetailExtract")
                                 .font(.body)
                             Spacer()
                         }
@@ -84,7 +85,6 @@ struct CityDetailView<ViewModel: CityDetailViewModelProtocol>: View {
             .navigationTitle(viewData.title)
         }
         .scrollIndicators(.hidden)
-        .accessibilityIdentifier("ContentView")
     }
 }
 

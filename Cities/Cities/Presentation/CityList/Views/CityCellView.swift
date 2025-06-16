@@ -19,10 +19,12 @@ struct CityCellView: View {
                 HStack {
                     Text(viewData.title)
                         .font(.title3)
+                        .accessibilityIdentifier("CityTitle")
                     Spacer()
                 }
                 HStack {
                     Text(viewData.subtitle)
+                        .accessibilityIdentifier("CitySubtitle")
                     Spacer()
                 }
                 .font(.caption2)
@@ -41,6 +43,7 @@ struct CityCellView: View {
             .background(Color.black)
             .clipShape(.capsule)
             .padding(.trailing, 8)
+            .accessibilityIdentifier("CityDetailButton")
             
             Image(systemName: (favorites.first(where: { $0.id == viewData.id })?.isFavorite ?? false) ? "heart.fill" : "heart")
                 .resizable()
@@ -55,8 +58,10 @@ struct CityCellView: View {
                     
                     viewData.actionsPublisher.send(.tapFavorite(id: viewData.id))
                 })
+                .accessibilityIdentifier("CityFavoriteButton")
         }
         .padding(.vertical, 16)
+//        .accessibilityIdentifier("CityCellView")
     }
 }
 
