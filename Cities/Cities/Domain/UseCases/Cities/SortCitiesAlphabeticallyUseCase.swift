@@ -7,24 +7,29 @@
 
 final class SortCitiesAlphabeticallyUseCase: SortCitiesUseCaseProtocol {
     func execute(cities: [CityLocation]) -> [CityLocation] {
-        let sortedCities = cities.sorted { (city1, city2) in
-            let city1Text = city1.name + city1.country
-            let city2Text = city2.name + city2.country
-            
-            return city1Text.removeWithespaces().lowercased() < city2Text.removeWithespaces().lowercased()
+        var citiesDictionary: [Int: CityLocation] = [:]
+        var citiesWithNameThatStartWithLetter: [CityLocation?] = []
+        var citiesWithNameThatDoesNotStartWithLetter: [CityLocation?] = []
+        
+        var textsDictionary: [Int: String] = [:]
+        
+        cities.forEach {
+            let text = ($0.name + $0.country).removeWithespaces().lowercased()
+            textsDictionary[$0.id] = text
+            citiesDictionary[$0.id] = $0
         }
         
-        var citiesWithNameThatStartWithLetter: [CityLocation] = []
-        var citiesWithNameThatDoesNotStartWithLetter: [CityLocation] = []
+        let sortedsTextsDictionary = textsDictionary.sorted { $0.value < $1.value }
         
-        for city in sortedCities {
-            if city.name.first?.isLetter ?? false {
-                citiesWithNameThatStartWithLetter.append(city)
+        for entry in sortedsTextsDictionary {
+            if entry.value.first?.isLetter ?? false {
+                citiesWithNameThatStartWithLetter.append(citiesDictionary[entry.key])
             } else {
-                citiesWithNameThatDoesNotStartWithLetter.append(city)
+                citiesWithNameThatDoesNotStartWithLetter.append(citiesDictionary[entry.key])
             }
         }
         
-        return citiesWithNameThatStartWithLetter + citiesWithNameThatDoesNotStartWithLetter
+        citiesWithNameThatStartWithLetter.append(contentsOf: citiesWithNameThatDoesNotStartWithLetter)
+        return citiesWithNameThatStartWithLetter.compactMap { $0 }
     }
 }
