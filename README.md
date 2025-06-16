@@ -122,8 +122,9 @@ Cities/
 
 ---
 
-## 🗂 Assumptions & Decisions
+## 🗂 Notes | Assumptions & Decisions
 
+- To access to About modal view just shake your device
 - Favorite status is persisted only by `cityId`
 - City details screen includes information fetched from Wikipedia API
 - Map feature uses native MapKit integration
