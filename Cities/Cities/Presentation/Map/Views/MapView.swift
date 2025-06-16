@@ -34,7 +34,7 @@ struct MapView: View {
             .mapStyle(.standard(elevation: .realistic))
             .accessibilityIdentifier("MapView")
         }
-        .background(.mint)
+        .navigationTitle(viewData.currentCityName)
     }
 }
 
@@ -42,5 +42,7 @@ struct MapView: View {
     let cameraPositon = MapCameraPosition.region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init()))
     let cityMock = CityLocationViewData(id: 0, title: "Mock City", subtitle: "", detailButtonText: "", actionsPublisher: .init())
     
-    MapView(viewData: .constant(.init(position: cameraPositon, currentCityName: "Mock City", cities: [cityMock])))
+    NavigationStack {
+        MapView(viewData: .constant(.init(position: cameraPositon, currentCityName: "Mock City", cities: [cityMock])))
+    }
 }
