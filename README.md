@@ -6,10 +6,14 @@ This is an iOS solution to the Ualá Mobile Challenge, implemented in **Swift** 
 
 ## 📷 Screnshoots
 
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="60">
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="60">
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="60">
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="60">
+## 📷 Screenshots
+
+<p align="center">
+  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="100">
+  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="100">
+  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="100">
+  <img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="100">
+</p>
 
 ## 🧱 Architecture
 
