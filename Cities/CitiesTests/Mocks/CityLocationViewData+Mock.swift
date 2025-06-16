@@ -5,6 +5,8 @@
 //  Created by Gonza Giampietri on 04/06/2025.
 //
 
+@testable import Cities
+
 extension CityLocationViewData {
     static let mock = CityLocationViewData(
         id: 0,

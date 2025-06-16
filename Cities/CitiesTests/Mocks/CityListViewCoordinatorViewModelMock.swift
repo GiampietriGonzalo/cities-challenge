@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+@testable import Cities
 
 final class CityListViewCoordinatorViewModelMock: AppCoordinatorViewModelProtocol {
     

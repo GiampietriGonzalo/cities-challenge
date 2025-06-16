@@ -39,5 +39,8 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView(viewData: .constant(.init(position: .region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init())), currentCityName: "Mock City", cities: [.mock, .mock, .mock, .mock, .mock, .mock, .mock])))
+    let cameraPositon = MapCameraPosition.region(.init(center: .init(latitude: -34.600621, longitude: -58.387721), span: .init()))
+    let cityMock = CityLocationViewData(id: 0, title: "Mock City", subtitle: "", detailButtonText: "", actionsPublisher: .init())
+    
+    MapView(viewData: .constant(.init(position: cameraPositon, currentCityName: "Mock City", cities: [cityMock])))
 }

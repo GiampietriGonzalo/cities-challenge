@@ -5,6 +5,8 @@
 //  Created by Gonza Giampietri on 12/06/2025.
 //
 
+@testable import Cities
+
 extension CityDetailDTO {
     static var mock = CityDetailDTO(title: "Bahía Blanca",
                                     description: "City in Buenos Aires Province, Argentina",

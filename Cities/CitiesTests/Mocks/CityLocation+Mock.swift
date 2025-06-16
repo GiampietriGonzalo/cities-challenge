@@ -5,6 +5,8 @@
 //  Created by Gonza Giampietri on 02/06/2025.
 //
 
+@testable import Cities
+
 extension CityLocation {
     static let mock = CityLocation(
         id: 1,

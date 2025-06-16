@@ -61,10 +61,10 @@ struct CityCellView: View {
                 .accessibilityIdentifier("CityFavoriteButton")
         }
         .padding(.vertical, 16)
-//        .accessibilityIdentifier("CityCellView")
     }
 }
 
 #Preview {
-    CityCellView(viewData: .mock)
+    let cityMock = CityLocationViewData(id: 0, title: "Mock City", subtitle: "", detailButtonText: "", actionsPublisher: .init())
+    CityCellView(viewData: cityMock)
 }

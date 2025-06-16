@@ -9,7 +9,7 @@ import SwiftUI
 import Observation
 
 @Observable
-final class AppCoordinatorViewModel: AppCoordinatorViewModelProtocol{
+final class AppCoordinatorViewModel: AppCoordinatorViewModelProtocol {
     var navigationPath = NavigationPath()
     
     //MARK: Binding

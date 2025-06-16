@@ -6,6 +6,7 @@
 //
 
 import Foundation
+@testable import Cities
 
 final class NetworkClientMock: NetworkClientProtocol {
     

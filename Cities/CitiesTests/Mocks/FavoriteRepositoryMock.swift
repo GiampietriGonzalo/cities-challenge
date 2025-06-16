@@ -5,6 +5,8 @@
 //  Created by Gonza Giampietri on 08/06/2025.
 //
 
+@testable import Cities
+
 final class FavoriteRepositoryMock: FavoriteRepositoryProtocol {
     var favoriteCities: [FavoriteCity] = []
     var error: CustomError?
