@@ -34,6 +34,8 @@ Each layer is isolated and communicates only through protocols, which enables te
 ### Coordinator Pattern
 ![CoordinatorPattern](./Diagrams/CoordinatorPattern.drawio.png)
 
+Note: Can be extend to support other types of navigation types like FullScreen and Complex presention screens.
+
 ### Design Choices
 
 - **Clean Architecture** separates the app by responsibility, enabling scalable and testable code.
@@ -158,7 +160,7 @@ To find all cities matching a prefix:
 In order to get more informationa about cities the app uses Wikipedia API: https://en.wikipedia.org/api/rest_v1. The app uses the endpoint https://en.wikipedia.org/api/rest_v1/page/summary/{cityName} to fetch the data related to a given city name.
 For some cities the API finds a valid data but the result is ambiguous (ex: New York, is a city and also a state of USA). In that the app display the following error:
 
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/8.png?raw=true" width="60">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/8.png?raw=true" width="200">
 
 The app shows the same error when a city has a valid result from the service but does not match with the city. (ex: Buenos Aires, CO. The result is correct for the country code AR but not for CO)
 ## 📬 Contact
