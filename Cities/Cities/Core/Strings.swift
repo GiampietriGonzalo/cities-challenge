@@ -15,7 +15,7 @@ struct Strings {
     struct CitList {
         static let title = "Cities"
         static let searchPlaceholder = "Search by name"
-        static let cancelButtonText = "Clear"
+        static let cancelButtonText = "Cancel"
         static let detailButtonText = "Details"
         
         struct icons {

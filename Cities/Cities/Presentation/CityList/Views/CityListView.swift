@@ -66,6 +66,9 @@ struct CityListView: View {
             AboutView()
                 .presentationDetents([.medium])
         }
+        .onTapGesture {
+            hideKeyboard()
+        }
         .toolbar(deviceOrientation.isLandscape ? .hidden : .automatic)
         .ignoresSafeArea(.keyboard)
         .blur(radius: showAbout ? 4 : 0)

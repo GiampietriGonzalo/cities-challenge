@@ -12,6 +12,7 @@ struct SearchBarView: View {
     @Binding var searchText: String
     @Binding var showCancelButton: Bool
     @Binding var isFilteringByFavorites: Bool
+    @FocusState private var isSearchFieldFocused: Bool
     
     var body: some View {
         HStack {
@@ -28,6 +29,7 @@ struct SearchBarView: View {
                 .textFieldStyle(.plain)
                 .padding(.vertical, 4)
                 .autocorrectionDisabled()
+                .focused($isSearchFieldFocused)
             }
             .frame(height: 32)
             .background(Color.gray.opacity(0.1))
@@ -39,6 +41,8 @@ struct SearchBarView: View {
             if showCancelButton {
                 Button {
                     searchText = ""
+                    showCancelButton = false
+                    isSearchFieldFocused = false
                 } label: {
                     Text(Strings.CitList.cancelButtonText)
                 }
