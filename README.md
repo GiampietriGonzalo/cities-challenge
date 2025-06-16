@@ -6,11 +6,10 @@ This is an iOS solution to the Ualá Mobile Challenge, implemented in **Swift** 
 
 ## 📷 Screnshoots
 
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="40" >
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="40" >
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="40" >
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="40" >
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/4.png?raw=true" width="40" >
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/1.png?raw=true" width="60">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/3.png?raw=true" width="60">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/5.png?raw=true" width="60">
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/6.png?raw=true" width="60">
 
 ## 🧱 Architecture
 
@@ -157,7 +156,7 @@ To find all cities matching a prefix:
 In order to get more informationa about cities the app uses Wikipedia API: https://en.wikipedia.org/api/rest_v1. The app uses the endpoint https://en.wikipedia.org/api/rest_v1/page/summary/{cityName} to fetch the data related to a given city name.
 For some cities the API finds a valid data but the result is ambiguous (ex: New York, is a city and also a state of USA). In that the app display the following error:
 
-<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/8.png?raw=true" width="40" >
+<img src="https://github.com/GiampietriGonzalo/cities-challenge/blob/master/Screenshots/8.png?raw=true" width="60">
 
 The app shows the same error when a city has a valid result from the service but does not match with the city. (ex: Buenos Aires, CO. The result is correct for the country code AR but not for CO)
 ## 📬 Contact
